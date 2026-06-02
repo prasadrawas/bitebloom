@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/app_logger.dart';
 import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/login_screen.dart';
 import 'presentation/screens/onboarding_screen.dart';
@@ -26,17 +27,24 @@ void main() async {
     systemNavigationBarIconBrightness: Brightness.light,
   ));
 
-  await dotenv.load(fileName: '.env');
+  log.i('[App] Starting Caliora...');
 
+  log.d('[App] Loading .env file');
+  await dotenv.load(fileName: '.env');
+  log.d('[App] GEMINI_API_KEY present: ${dotenv.env['GEMINI_API_KEY']?.isNotEmpty ?? false}');
+
+  log.d('[App] Initializing Firebase');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  log.i('[App] Firebase initialized');
 
   // Enable Firestore offline persistence
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
     cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
   );
+  log.d('[App] Firestore persistence enabled');
 
   runApp(const ProviderScope(child: CalioraApp()));
 }

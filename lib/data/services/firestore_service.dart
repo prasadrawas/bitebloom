@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../core/utils/app_logger.dart';
 import '../models/user_profile.dart';
 import '../models/meal_entry.dart';
 import '../models/weight_log.dart';
@@ -14,7 +15,10 @@ class FirestoreService {
       _db.collection('users').doc(userId).collection('profile').doc('data');
 
   Future<void> saveProfile(String userId, UserProfile profile) async {
+    log.i('[Firestore] Saving profile for user: $userId');
+    log.d('[Firestore] Profile: ${profile.name}, goal: ${profile.goal}, calories: ${profile.dailyCalorieTarget}');
     await _profileDoc(userId).set(profile.toFirestore());
+    log.i('[Firestore] Profile saved');
   }
 
   Future<void> updateProfile(
@@ -36,7 +40,9 @@ class FirestoreService {
   }
 
   Future<bool> hasProfile(String userId) async {
+    log.d('[Firestore] Checking profile exists for: $userId');
     final doc = await _profileDoc(userId).get();
+    log.d('[Firestore] Profile exists: ${doc.exists}');
     return doc.exists;
   }
 
@@ -46,7 +52,10 @@ class FirestoreService {
       _db.collection('users').doc(userId).collection('meals');
 
   Future<String> addMeal(String userId, MealEntry meal) async {
+    log.i('[Firestore] Adding meal: ${meal.mealName} (${meal.calories} kcal)');
+    log.d('[Firestore] User: $userId, Type: ${meal.mealType}');
     final doc = await _mealsCollection(userId).add(meal.toFirestore());
+    log.i('[Firestore] Meal added with ID: ${doc.id}');
     return doc.id;
   }
 
@@ -56,7 +65,9 @@ class FirestoreService {
   }
 
   Future<void> deleteMeal(String userId, String mealId) async {
+    log.i('[Firestore] Deleting meal: $mealId');
     await _mealsCollection(userId).doc(mealId).delete();
+    log.i('[Firestore] Meal deleted');
   }
 
   Stream<List<MealEntry>> streamMealsForDate(String userId, DateTime date) {
@@ -113,6 +124,7 @@ class FirestoreService {
   /// Recalculate daily summary from meals
   Future<void> recalculateDailySummary(
       String userId, DateTime date, int calorieTarget) async {
+    log.i('[Firestore] Recalculating daily summary for $date');
     final start = AppDateUtils.startOfDay(date);
     final end = AppDateUtils.endOfDay(date);
     final snapshot = await _mealsCollection(userId)
@@ -122,13 +134,30 @@ class FirestoreService {
         .get();
 
     int totalCal = 0;
-    double totalP = 0, totalC = 0, totalF = 0;
+    double totalP = 0, totalC = 0, totalF = 0, totalFiber = 0;
+    double totalSugar = 0, totalSatFat = 0;
+    double totalSodium = 0, totalPotassium = 0, totalCalcium = 0;
+    double totalIron = 0, totalMagnesium = 0;
+    double totalVitA = 0, totalVitC = 0, totalVitD = 0, totalVitB12 = 0;
+
     for (final doc in snapshot.docs) {
       final meal = MealEntry.fromFirestore(doc);
       totalCal += meal.calories;
       totalP += meal.protein;
       totalC += meal.carbs;
       totalF += meal.fat;
+      totalFiber += meal.fiber;
+      totalSugar += meal.sugar;
+      totalSatFat += meal.saturatedFat;
+      totalSodium += meal.sodium;
+      totalPotassium += meal.potassium;
+      totalCalcium += meal.calcium;
+      totalIron += meal.iron;
+      totalMagnesium += meal.magnesium;
+      totalVitA += meal.vitaminA;
+      totalVitC += meal.vitaminC;
+      totalVitD += meal.vitaminD;
+      totalVitB12 += meal.vitaminB12;
     }
 
     final dateKey = AppDateUtils.formatDate(date);
@@ -140,10 +169,23 @@ class FirestoreService {
       'totalProtein': totalP,
       'totalCarbs': totalC,
       'totalFat': totalF,
+      'totalFiber': totalFiber,
+      'totalSugar': totalSugar,
+      'totalSaturatedFat': totalSatFat,
+      'totalSodium': totalSodium,
+      'totalPotassium': totalPotassium,
+      'totalCalcium': totalCalcium,
+      'totalIron': totalIron,
+      'totalMagnesium': totalMagnesium,
+      'totalVitaminA': totalVitA,
+      'totalVitaminC': totalVitC,
+      'totalVitaminD': totalVitD,
+      'totalVitaminB12': totalVitB12,
       'waterIntake': existing?.waterIntake ?? 0,
       'streak': existing?.streak ?? 0,
       'goalMet': totalCal >= (calorieTarget * 0.9) && totalCal <= (calorieTarget * 1.1),
     });
+    log.i('[Firestore] Summary recalculated: $totalCal kcal, P:${totalP.toInt()}g C:${totalC.toInt()}g F:${totalF.toInt()}g');
   }
 
   // ---- Weight Logs ----
@@ -173,6 +215,7 @@ class FirestoreService {
   // ---- Account Deletion ----
 
   Future<void> deleteAllUserData(String userId) async {
+    log.w('[Firestore] Deleting ALL data for user: $userId');
     final userDoc = _db.collection('users').doc(userId);
 
     // Delete meals

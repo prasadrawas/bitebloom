@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
+import '../../core/utils/app_logger.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/profile_provider.dart';
 
@@ -29,18 +30,31 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigateAfterDelay() async {
-    await Future.delayed(const Duration(seconds: 3));
+    log.i('[Splash] Waiting for auth state...');
+    // Wait for Firebase Auth to resolve the persisted session first
+    final authFuture = ref.read(authServiceProvider).authStateChanges.first;
+    // Run both in parallel — animation plays while auth resolves
+    final results = await Future.wait([
+      authFuture,
+      Future.delayed(const Duration(seconds: 3)),
+    ]);
     if (!mounted) return;
 
-    final user = ref.read(currentUserProvider);
-    if (user == null) {
+    final authState = results[0];
+
+    if (authState == null) {
+      log.i('[Splash] No user session → Login');
       _navigateTo('/login');
     } else {
+      log.i('[Splash] User found: ${authState.uid}');
+      log.d('[Splash] Email: ${authState.email}');
       final hasProfile =
-          await ref.read(firestoreServiceProvider).hasProfile(user.uid);
+          await ref.read(firestoreServiceProvider).hasProfile(authState.uid);
       if (hasProfile) {
+        log.i('[Splash] Profile exists → Home');
         _navigateTo('/home');
       } else {
+        log.i('[Splash] No profile → Onboarding');
         _navigateTo('/onboarding');
       }
     }
