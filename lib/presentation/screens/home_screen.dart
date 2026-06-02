@@ -10,7 +10,6 @@ import '../../providers/profile_provider.dart';
 import '../../providers/meals_provider.dart';
 import '../../providers/summary_provider.dart';
 import '../widgets/calorie_ring.dart';
-import '../widgets/macro_bar.dart';
 import '../widgets/meal_card.dart';
 import '../widgets/water_tracker.dart';
 import '../widgets/shimmer_loader.dart';
@@ -85,9 +84,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         Text(
                           '${AppDateUtils.getGreeting()}, $name \u{1F44B}',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -98,7 +98,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                       ],
-                    ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.05, end: 0);
+                    )
+                        .animate()
+                        .fadeIn(duration: 500.ms)
+                        .slideX(begin: -0.05, end: 0);
                   },
                   loading: () => const ShimmerLoader(height: 48, width: 200),
                   error: (_, _) => const Text('Hello there \u{1F44B}'),
@@ -125,7 +128,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Macro Bars
+                // Macro Targets
                 profileAsync.when(
                   data: (profile) {
                     if (profile == null) return const SizedBox.shrink();
@@ -139,28 +142,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       child: Column(
                         children: [
-                          _buildSectionHeader('Macros', Icons.pie_chart_outline),
+                          _buildSectionHeader(
+                              'Macro Targets', Icons.track_changes),
                           const SizedBox(height: 14),
-                          MacroBar(
-                            label: 'Protein',
-                            current: summary?.totalProtein ?? 0,
-                            target: profile.proteinTarget.toDouble(),
-                            color: AppColors.protein,
-                          ),
+                          _mineralRow('Protein', summary?.totalProtein ?? 0,
+                              profile.proteinTarget.toDouble(), 'g',
+                              Icons.fitness_center, AppColors.protein),
                           const SizedBox(height: 14),
-                          MacroBar(
-                            label: 'Carbs',
-                            current: summary?.totalCarbs ?? 0,
-                            target: profile.carbsTarget.toDouble(),
-                            color: AppColors.carbs,
-                          ),
+                          _mineralRow('Carbs', summary?.totalCarbs ?? 0,
+                              profile.carbsTarget.toDouble(), 'g',
+                              Icons.grain, AppColors.carbs),
                           const SizedBox(height: 14),
-                          MacroBar(
-                            label: 'Fat',
-                            current: summary?.totalFat ?? 0,
-                            target: profile.fatTarget.toDouble(),
-                            color: AppColors.fat,
-                          ),
+                          _mineralRow('Fat', summary?.totalFat ?? 0,
+                              profile.fatTarget.toDouble(), 'g',
+                              Icons.opacity, AppColors.fat),
+                          const SizedBox(height: 14),
+                          _mineralRow('Fiber', summary?.totalFiber ?? 0,
+                              25, 'g',
+                              Icons.eco, AppColors.fiber),
+                          const SizedBox(height: 14),
+                          _mineralRow('Sugar', summary?.totalSugar ?? 0,
+                              50, 'g',
+                              Icons.cookie_outlined, AppColors.warning),
+                          const SizedBox(height: 14),
+                          _mineralRow('Saturated Fat', summary?.totalSaturatedFat ?? 0,
+                              20, 'g',
+                              Icons.water_drop_outlined, AppColors.error),
                         ],
                       ),
                     )
@@ -168,7 +175,139 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         .fadeIn(duration: 500.ms, delay: 200.ms)
                         .slideY(begin: 0.1, end: 0);
                   },
-                  loading: () => const ShimmerLoader(height: 140),
+                  loading: () => const ShimmerLoader(height: 180),
+                  error: (_, _) => const SizedBox.shrink(),
+                ),
+                const SizedBox(height: 16),
+
+                // Minerals & Vitamins Dashboard
+                summaryAsync.when(
+                  data: (summary) {
+                    return Column(
+                      children: [
+                        // Minerals Section
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardSurface,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: AppColors.glassBorder),
+                          ),
+                          child: Column(
+                            children: [
+                              _buildSectionHeader(
+                                  'Minerals', Icons.science_outlined),
+                              const SizedBox(height: 14),
+                              _mineralRow(
+                                'Sodium',
+                                summary?.totalSodium ?? 0,
+                                2300,
+                                'mg',
+                                Icons.water_drop,
+                                AppColors.warning,
+                              ),
+                              const SizedBox(height: 14),
+                              _mineralRow(
+                                'Potassium',
+                                summary?.totalPotassium ?? 0,
+                                3500,
+                                'mg',
+                                Icons.bolt,
+                                AppColors.accentGreen,
+                              ),
+                              const SizedBox(height: 14),
+                              _mineralRow(
+                                'Calcium',
+                                summary?.totalCalcium ?? 0,
+                                1000,
+                                'mg',
+                                Icons.shield_outlined,
+                                AppColors.white70,
+                              ),
+                              const SizedBox(height: 14),
+                              _mineralRow(
+                                'Iron',
+                                summary?.totalIron ?? 0,
+                                18,
+                                'mg',
+                                Icons.bloodtype_outlined,
+                                AppColors.error,
+                              ),
+                              const SizedBox(height: 14),
+                              _mineralRow(
+                                'Magnesium',
+                                summary?.totalMagnesium ?? 0,
+                                400,
+                                'mg',
+                                Icons.spa_outlined,
+                                AppColors.protein,
+                              ),
+                            ],
+                          ),
+                        )
+                            .animate()
+                            .fadeIn(duration: 500.ms, delay: 400.ms)
+                            .slideY(begin: 0.1, end: 0),
+                        const SizedBox(height: 16),
+
+                        // Vitamins Section
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardSurface,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: AppColors.glassBorder),
+                          ),
+                          child: Column(
+                            children: [
+                              _buildSectionHeader(
+                                  'Vitamins', Icons.local_pharmacy_outlined),
+                              const SizedBox(height: 14),
+                              _mineralRow(
+                                'Vitamin A',
+                                summary?.totalVitaminA ?? 0,
+                                900,
+                                'mcg',
+                                Icons.visibility_outlined,
+                                AppColors.carbs,
+                              ),
+                              const SizedBox(height: 14),
+                              _mineralRow(
+                                'Vitamin C',
+                                summary?.totalVitaminC ?? 0,
+                                90,
+                                'mg',
+                                Icons.local_pharmacy_outlined,
+                                AppColors.accentGreen,
+                              ),
+                              const SizedBox(height: 14),
+                              _mineralRow(
+                                'Vitamin D',
+                                summary?.totalVitaminD ?? 0,
+                                20,
+                                'mcg',
+                                Icons.wb_sunny_outlined,
+                                AppColors.warning,
+                              ),
+                              const SizedBox(height: 14),
+                              _mineralRow(
+                                'Vitamin B12',
+                                summary?.totalVitaminB12 ?? 0,
+                                2.4,
+                                'mcg',
+                                Icons.psychology_outlined,
+                                AppColors.protein,
+                              ),
+                            ],
+                          ),
+                        )
+                            .animate()
+                            .fadeIn(duration: 500.ms, delay: 500.ms)
+                            .slideY(begin: 0.1, end: 0),
+                      ],
+                    );
+                  },
+                  loading: () => const SizedBox.shrink(),
                   error: (_, _) => const SizedBox.shrink(),
                 ),
                 const SizedBox(height: 16),
@@ -221,7 +360,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     )
                         .animate()
-                        .fadeIn(duration: 500.ms, delay: 300.ms)
+                        .fadeIn(duration: 500.ms, delay: 350.ms)
                         .slideX(begin: -0.05, end: 0);
                   },
                   loading: () => const SizedBox.shrink(),
@@ -350,15 +489,109 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget _mineralRow(String label, double current, double dailyTarget,
+      String unit, IconData icon, Color color) {
+    final pct = dailyTarget > 0 ? (current / dailyTarget).clamp(0.0, 1.0) : 0.0;
+    final pctDisplay = (pct * 100).round();
+    final isOver = current > dailyTarget;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.white70,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      '${current.toStringAsFixed(current < 10 ? 1 : 0)} / ${dailyTarget.toStringAsFixed(dailyTarget < 10 ? 1 : 0)} $unit',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.white30,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: SizedBox(
+                    height: 6,
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        FractionallySizedBox(
+                          widthFactor: pct,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isOver ? AppColors.error : color,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: (pctDisplay >= 80 ? AppColors.accentGreen : color)
+                  .withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              '$pctDisplay%',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: pctDisplay >= 80 ? AppColors.accentGreen : color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSectionHeader(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppColors.white54),
+        Icon(icon, size: 20, color: AppColors.white54),
         const SizedBox(width: 8),
         Text(
           title,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 17,
             fontWeight: FontWeight.w700,
             color: AppColors.white,
           ),
