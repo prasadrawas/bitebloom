@@ -22,7 +22,7 @@ class AppStrings {
   static const String gain = 'Gain Weight';
 
   // Gemini prompt
-  static const String geminiPrompt = '''Analyze this food image and return ONLY a JSON object with no extra text, no markdown, no code blocks. Format:
+  static const String geminiPrompt = '''Analyze this food image and return ONLY a JSON object with no extra text, no markdown, no code blocks. Estimate all nutritional values per serving. Format:
 {
   "meal_name": "string",
   "calories": number,
@@ -30,6 +30,17 @@ class AppStrings {
   "carbs_g": number,
   "fat_g": number,
   "fiber_g": number,
+  "sugar_g": number,
+  "saturated_fat_g": number,
+  "sodium_mg": number,
+  "potassium_mg": number,
+  "calcium_mg": number,
+  "iron_mg": number,
+  "magnesium_mg": number,
+  "vitamin_a_mcg": number,
+  "vitamin_c_mg": number,
+  "vitamin_d_mcg": number,
+  "vitamin_b12_mcg": number,
   "serving_size": "string",
   "confidence": "high/medium/low",
   "items_detected": ["list of food items"]

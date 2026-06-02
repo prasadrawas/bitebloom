@@ -4,10 +4,25 @@ class MealEntry {
   final String id;
   final String mealName;
   final int calories;
+  // Macronutrients
   final double protein;
   final double carbs;
   final double fat;
   final double fiber;
+  final double sugar;
+  final double saturatedFat;
+  // Minerals
+  final double sodium; // mg
+  final double potassium; // mg
+  final double calcium; // mg
+  final double iron; // mg
+  final double magnesium; // mg
+  // Vitamins
+  final double vitaminA; // mcg
+  final double vitaminC; // mg
+  final double vitaminD; // mcg
+  final double vitaminB12; // mcg
+
   final String? imageUrl;
   final String mealType; // 'breakfast', 'lunch', 'dinner', 'snack'
   final DateTime timestamp;
@@ -22,6 +37,17 @@ class MealEntry {
     required this.carbs,
     required this.fat,
     this.fiber = 0,
+    this.sugar = 0,
+    this.saturatedFat = 0,
+    this.sodium = 0,
+    this.potassium = 0,
+    this.calcium = 0,
+    this.iron = 0,
+    this.magnesium = 0,
+    this.vitaminA = 0,
+    this.vitaminC = 0,
+    this.vitaminD = 0,
+    this.vitaminB12 = 0,
     this.imageUrl,
     required this.mealType,
     DateTime? timestamp,
@@ -39,9 +65,21 @@ class MealEntry {
       carbs: (data['carbs'] ?? 0).toDouble(),
       fat: (data['fat'] ?? 0).toDouble(),
       fiber: (data['fiber'] ?? 0).toDouble(),
+      sugar: (data['sugar'] ?? 0).toDouble(),
+      saturatedFat: (data['saturatedFat'] ?? 0).toDouble(),
+      sodium: (data['sodium'] ?? 0).toDouble(),
+      potassium: (data['potassium'] ?? 0).toDouble(),
+      calcium: (data['calcium'] ?? 0).toDouble(),
+      iron: (data['iron'] ?? 0).toDouble(),
+      magnesium: (data['magnesium'] ?? 0).toDouble(),
+      vitaminA: (data['vitaminA'] ?? 0).toDouble(),
+      vitaminC: (data['vitaminC'] ?? 0).toDouble(),
+      vitaminD: (data['vitaminD'] ?? 0).toDouble(),
+      vitaminB12: (data['vitaminB12'] ?? 0).toDouble(),
       imageUrl: data['imageUrl'],
       mealType: data['mealType'] ?? 'snack',
-      timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      timestamp:
+          (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       servingSize: data['servingSize'] ?? '1 serving',
       itemsDetected: List<String>.from(data['itemsDetected'] ?? []),
     );
@@ -55,6 +93,17 @@ class MealEntry {
       'carbs': carbs,
       'fat': fat,
       'fiber': fiber,
+      'sugar': sugar,
+      'saturatedFat': saturatedFat,
+      'sodium': sodium,
+      'potassium': potassium,
+      'calcium': calcium,
+      'iron': iron,
+      'magnesium': magnesium,
+      'vitaminA': vitaminA,
+      'vitaminC': vitaminC,
+      'vitaminD': vitaminD,
+      'vitaminB12': vitaminB12,
       'imageUrl': imageUrl,
       'mealType': mealType,
       'timestamp': Timestamp.fromDate(timestamp),
@@ -70,6 +119,17 @@ class MealEntry {
     double? carbs,
     double? fat,
     double? fiber,
+    double? sugar,
+    double? saturatedFat,
+    double? sodium,
+    double? potassium,
+    double? calcium,
+    double? iron,
+    double? magnesium,
+    double? vitaminA,
+    double? vitaminC,
+    double? vitaminD,
+    double? vitaminB12,
     String? imageUrl,
     String? mealType,
     DateTime? timestamp,
@@ -84,6 +144,17 @@ class MealEntry {
       carbs: carbs ?? this.carbs,
       fat: fat ?? this.fat,
       fiber: fiber ?? this.fiber,
+      sugar: sugar ?? this.sugar,
+      saturatedFat: saturatedFat ?? this.saturatedFat,
+      sodium: sodium ?? this.sodium,
+      potassium: potassium ?? this.potassium,
+      calcium: calcium ?? this.calcium,
+      iron: iron ?? this.iron,
+      magnesium: magnesium ?? this.magnesium,
+      vitaminA: vitaminA ?? this.vitaminA,
+      vitaminC: vitaminC ?? this.vitaminC,
+      vitaminD: vitaminD ?? this.vitaminD,
+      vitaminB12: vitaminB12 ?? this.vitaminB12,
       imageUrl: imageUrl ?? this.imageUrl,
       mealType: mealType ?? this.mealType,
       timestamp: timestamp ?? this.timestamp,
