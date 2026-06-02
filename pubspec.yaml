@@ -1,0 +1,58 @@
+name: caliora
+description: "Caliora - AI-powered calorie and macro tracking app"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Firebase
+  firebase_core: ^3.12.1
+  firebase_auth: ^5.5.2
+  cloud_firestore: ^5.6.7
+  dio: ^5.7.0
+  firebase_analytics: ^11.4.5
+  google_sign_in: ^6.2.2
+
+  # AI
+  google_generative_ai: ^0.4.6
+
+  # UI & Animations
+  flutter_animate: ^4.5.2
+  fl_chart: ^0.69.2
+  google_fonts: ^6.2.1
+  lottie: ^3.3.1
+  shimmer: ^3.0.0
+  confetti: ^0.8.0
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+
+  # Camera & Images
+  camera: ^0.11.1
+  image_picker: ^1.1.2
+  image: ^4.5.3
+
+  # Utils
+  flutter_dotenv: ^5.2.1
+  intl: ^0.20.2
+  path_provider: ^2.1.5
+  cached_network_image: ^3.4.1
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+    - assets/animations/

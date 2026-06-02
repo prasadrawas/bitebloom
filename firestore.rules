@@ -1,0 +1,73 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // No access by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User-scoped data: only authenticated owner can access
+    match /users/{userId} {
+      // Helper: caller is the document owner
+      function isOwner() {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      // Profile document
+      match /profile/data {
+        allow read: if isOwner();
+        allow create: if isOwner()
+          && request.resource.data.keys().hasAll(['name', 'age', 'weight', 'height', 'goal',
+              'dailyCalorieTarget', 'proteinTarget', 'carbsTarget', 'fatTarget', 'createdAt'])
+          && request.resource.data.name is string
+          && request.resource.data.age is int
+          && request.resource.data.weight is number
+          && request.resource.data.height is number
+          && request.resource.data.goal in ['lose', 'maintain', 'gain']
+          && request.resource.data.dailyCalorieTarget is int
+          && request.resource.data.proteinTarget is int
+          && request.resource.data.carbsTarget is int
+          && request.resource.data.fatTarget is int;
+        allow update: if isOwner()
+          && (!request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['uid']));
+        allow delete: if isOwner();
+      }
+
+      // Meals subcollection
+      match /meals/{mealId} {
+        allow read: if isOwner();
+        allow create: if isOwner()
+          && request.resource.data.keys().hasAll(['mealName', 'calories', 'protein',
+              'carbs', 'fat', 'mealType', 'timestamp'])
+          && request.resource.data.mealName is string
+          && request.resource.data.calories is int
+          && request.resource.data.protein is number
+          && request.resource.data.carbs is number
+          && request.resource.data.fat is number
+          && request.resource.data.mealType in ['breakfast', 'lunch', 'dinner', 'snack'];
+        allow update: if isOwner();
+        allow delete: if isOwner();
+      }
+
+      // Weight logs subcollection
+      match /weight_logs/{logId} {
+        allow read: if isOwner();
+        allow create: if isOwner()
+          && request.resource.data.keys().hasAll(['weight', 'date', 'timestamp'])
+          && request.resource.data.weight is number
+          && request.resource.data.date is string;
+        allow update: if isOwner();
+        allow delete: if isOwner();
+      }
+
+      // Daily summaries subcollection
+      match /daily_summaries/{date} {
+        allow read: if isOwner();
+        allow create: if isOwner();
+        allow update: if isOwner();
+        allow delete: if isOwner();
+      }
+    }
+  }
+}
