@@ -83,6 +83,21 @@ class FirestoreService {
             snap.docs.map((doc) => MealEntry.fromFirestore(doc)).toList());
   }
 
+  Future<List<MealEntry>> getMealsForRange(
+      String userId, DateTime start, DateTime end) async {
+    log.d('[Firestore] Fetching meals from $start to $end');
+    final snapshot = await _mealsCollection(userId)
+        .where('timestamp',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+        .where('timestamp', isLessThanOrEqualTo: Timestamp.fromDate(end))
+        .orderBy('timestamp', descending: false)
+        .get();
+    final meals =
+        snapshot.docs.map((doc) => MealEntry.fromFirestore(doc)).toList();
+    log.d('[Firestore] Fetched ${meals.length} meals');
+    return meals;
+  }
+
   Stream<List<MealEntry>> streamTodayMeals(String userId) {
     return streamMealsForDate(userId, DateTime.now());
   }
