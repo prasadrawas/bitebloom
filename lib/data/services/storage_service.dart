@@ -1,10 +1,9 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import '../../core/config/app_config.dart';
 import '../../core/utils/app_logger.dart';
 
 class StorageService {
-  static const _cloudName = 'dvnmhataw';
-  static const _uploadPreset = 'caliora_meals';
 
   Future<String> uploadMealImage(
       String userId, String fileName, File file) async {
@@ -15,7 +14,7 @@ class StorageService {
 
     final dio = Dio();
     final formData = FormData.fromMap({
-      'upload_preset': _uploadPreset,
+      'upload_preset': AppConfig.cloudinaryUploadPreset,
       'folder': 'users/$userId/meals',
       'file': await MultipartFile.fromFile(file.path, filename: fileName),
     });
@@ -23,7 +22,7 @@ class StorageService {
     try {
       final stopwatch = Stopwatch()..start();
       final response = await dio.post(
-        'https://api.cloudinary.com/v1_1/$_cloudName/image/upload',
+        'https://api.cloudinary.com/v1_1/${AppConfig.cloudinaryCloudName}/image/upload',
         data: formData,
       );
       stopwatch.stop();

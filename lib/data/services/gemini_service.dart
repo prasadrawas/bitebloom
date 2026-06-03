@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:image/image.dart' as img;
+import '../../core/config/app_config.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/utils/app_logger.dart';
 import '../models/meal_entry.dart';
@@ -31,7 +32,7 @@ class GeminiService {
     }
 
     final url =
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$_apiKey';
+        'https://generativelanguage.googleapis.com/v1beta/models/${AppConfig.geminiModel}:generateContent?key=$_apiKey';
 
     log.i('[Gemini] Sending request to Gemini 2.5 Flash');
     log.d('[Gemini] API URL: ${url.replaceAll(_apiKey, '***')}');
@@ -55,8 +56,8 @@ class GeminiService {
             }
           ],
           'generationConfig': {
-            'temperature': 0.3,
-            'maxOutputTokens': 4096,
+            'temperature': AppConfig.geminiTemperature,
+            'maxOutputTokens': AppConfig.geminiMaxTokens,
           },
         },
       );
@@ -154,11 +155,12 @@ class GeminiService {
 
     // Resize if larger than 800px
     img.Image resized;
-    if (image.width > 800 || image.height > 800) {
+    final maxW = AppConfig.imageMaxWidth;
+    if (image.width > maxW || image.height > maxW) {
       resized = img.copyResize(
         image,
-        width: image.width > image.height ? 800 : null,
-        height: image.height >= image.width ? 800 : null,
+        width: image.width > image.height ? maxW : null,
+        height: image.height >= image.width ? maxW : null,
         interpolation: img.Interpolation.linear,
       );
       log.d('[Gemini] Resized to: ${resized.width}x${resized.height}');
@@ -167,7 +169,7 @@ class GeminiService {
     }
 
     // Encode as JPEG with quality 70
-    final compressed = Uint8List.fromList(img.encodeJpg(resized, quality: 70));
+    final compressed = Uint8List.fromList(img.encodeJpg(resized, quality: AppConfig.imageCompressionQuality));
     return compressed;
   }
 }

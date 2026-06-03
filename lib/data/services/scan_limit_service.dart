@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../core/config/app_config.dart';
 import '../../core/utils/app_logger.dart';
 import '../../core/utils/date_utils.dart';
 
 class ScanLimitService {
-  static const int dailyLimit = 10;
+  static int get dailyLimit => AppConfig.dailyScanLimit;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   DocumentReference _scanDoc(String userId, String date) =>
