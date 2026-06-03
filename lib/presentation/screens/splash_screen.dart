@@ -91,10 +91,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: C.of(context).bg,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
             // App icon with glow
             AnimatedBuilder(
               animation: _controller,
@@ -177,6 +179,24 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 .fadeIn(duration: 600.ms, delay: 1200.ms),
           ],
         ),
+      ),
+      Positioned(
+        bottom: 24,
+        left: 0,
+        right: 0,
+        child: Center(
+          child: Text(
+            'Created by Prasad Rawas',
+            style: TextStyle(
+              fontSize: 12,
+              color: C.of(context).text30,
+            ),
+          )
+              .animate()
+              .fadeIn(duration: 600.ms, delay: 1000.ms),
+        ),
+      ),
+        ],
       ),
     );
   }

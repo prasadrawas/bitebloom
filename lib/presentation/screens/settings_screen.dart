@@ -938,21 +938,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 32),
           Center(
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  const TextSpan(text: 'Bite'),
+            child: Column(
+              children: [
+                Text.rich(
                   TextSpan(
-                    text: 'Bloom',
-                    style: TextStyle(color: AppColors.accentGreen),
+                    children: [
+                      const TextSpan(text: 'Bite'),
+                      TextSpan(
+                        text: 'Bloom',
+                        style: TextStyle(color: AppColors.accentGreen),
+                      ),
+                      TextSpan(text: ' v1.0.0'),
+                    ],
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: C.of(context).text30,
+                    ),
                   ),
-                  TextSpan(text: ' v1.0.0'),
-                ],
-                style: TextStyle(
-                  fontSize: 12,
-                  color: C.of(context).text30,
                 ),
-              ),
+                const SizedBox(height: 4),
+                Text(
+                  'Created by Prasad Rawas',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: C.of(context).text30,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

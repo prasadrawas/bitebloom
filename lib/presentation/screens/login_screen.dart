@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter/gestures.dart';
 import '../../core/constants/app_colors.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../core/theme/theme_colors.dart';
+import 'legal_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -370,9 +372,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     .fadeIn(duration: 600.ms, delay: 750.ms),
 
                 const SizedBox(height: 20),
-                Text(
-                  'By continuing, you agree to our Terms of Service',
-                  style: Theme.of(context).textTheme.bodySmall,
+                Text.rich(
+                  TextSpan(
+                    style: Theme.of(context).textTheme.bodySmall,
+                    children: [
+                      const TextSpan(text: 'By continuing, you agree to our '),
+                      TextSpan(
+                        text: 'Terms of Service',
+                        style: TextStyle(
+                          color: AppColors.accentGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const LegalScreen(
+                                    title: 'Terms of Service',
+                                    url: 'https://bitebloom.prasadrawas.online/terms.html',
+                                  ),
+                                ),
+                              ),
+                      ),
+                      const TextSpan(text: ' and '),
+                      TextSpan(
+                        text: 'Privacy Policy',
+                        style: TextStyle(
+                          color: AppColors.accentGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const LegalScreen(
+                                    title: 'Privacy Policy',
+                                    url: 'https://bitebloom.prasadrawas.online/privacy.html',
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
                   textAlign: TextAlign.center,
                 )
                     .animate()
