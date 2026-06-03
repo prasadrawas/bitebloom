@@ -17,6 +17,7 @@
 - CSV data export with date range selection
 - Cloudinary image upload for meal photos
 - Daily scan limit enforcement
+- In-app legal pages (privacy policy, terms, disclaimer) via webview
 
 ### Branding
 - Dual-color "BiteBloom" styling — "Bite" in white, "Bloom" in accent green (#00E676)
