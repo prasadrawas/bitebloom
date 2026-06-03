@@ -11,6 +11,7 @@ Your AI Nutrition Companion — snap a photo of any meal and instantly get detai
 - **Food Diary** — Browse and review meals logged by date
 - **Progress Tracking** — Weekly and monthly charts for calories, macros, and nutrition trends
 - **Meal Reminders** — Customizable daily notifications for breakfast, lunch, and dinner
+- **Email & Google Auth** — Sign up/sign in with email and password, or continue with Google. Includes forgot password flow
 - **Dark & Light Themes** — Material 3 dual-theme design
 - **Offline Support** — Firestore offline persistence for uninterrupted tracking
 - **Data Export** — Export meal history as CSV
@@ -18,7 +19,7 @@ Your AI Nutrition Companion — snap a photo of any meal and instantly get detai
 ## Tech Stack
 
 - **Flutter** (SDK ^3.12.0) — Cross-platform UI
-- **Firebase** — Auth (Google Sign-In), Firestore, Analytics
+- **Firebase** — Auth (Email/Password + Google Sign-In), Firestore, Analytics
 - **Google Gemini API** — AI food image analysis with automatic model fallback
 - **Cloudinary** — Meal image storage
 - **Riverpod** — State management

@@ -10,6 +10,7 @@
 - Meal reminder notifications — customizable daily reminders for breakfast (10AM), lunch (2PM), dinner (8PM)
 - Pre-permission prompt shown after first meal log for a natural opt-in flow
 - Dark and light theme with Material 3 design
+- Email/password authentication with registration, sign-in, and forgot password
 - Google Sign-In authentication
 - Firestore offline persistence
 - CSV data export with date range selection
