@@ -63,7 +63,9 @@ class AnimatedBottomNav extends StatelessWidget {
                 children: [
                   Icon(
                     item.icon,
-                    color: isSelected ? AppColors.accentGreen : C.of(context).text54,
+                    color: isSelected
+                        ? AppColors.accentGreen
+                        : C.of(context).text54,
                     size: 22,
                   ),
                   if (isSelected) ...[
