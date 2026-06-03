@@ -16,7 +16,7 @@ class BarcodeService {
       final response = await _dio.get(
         url,
         options: Options(headers: {
-          'User-Agent': 'Caliora/1.0 (Flutter; contact@caliora.app)',
+          'User-Agent': 'BiteBloom/1.0 (Flutter; contact@bitebloom.app)',
         }),
       );
       stopwatch.stop();

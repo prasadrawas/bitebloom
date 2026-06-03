@@ -735,7 +735,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 32),
           Center(
             child: Text(
-              'Caliora v1.0.0',
+              'BiteBloom v1.0.0',
               style: TextStyle(
                 fontSize: 12,
                 color: C.of(context).text30,

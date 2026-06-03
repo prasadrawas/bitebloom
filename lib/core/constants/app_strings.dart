@@ -1,5 +1,5 @@
 class AppStrings {
-  static const String appName = 'Caliora';
+  static const String appName = 'BiteBloom';
   static const String tagline = 'Your AI Nutrition Companion';
 
   // Onboarding

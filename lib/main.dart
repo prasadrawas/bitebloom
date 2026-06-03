@@ -29,7 +29,7 @@ void main() async {
     systemNavigationBarIconBrightness: Brightness.light,
   ));
 
-  log.i('[App] Starting Caliora...');
+  log.i('[App] Starting BiteBloom...');
 
   log.d('[App] Loading .env file');
   await dotenv.load(fileName: '.env');
@@ -49,17 +49,17 @@ void main() async {
   );
   log.d('[App] Firestore persistence enabled');
 
-  runApp(const ProviderScope(child: CalioraApp()));
+  runApp(const ProviderScope(child: BiteBloomApp()));
 }
 
-class CalioraApp extends ConsumerWidget {
-  const CalioraApp({super.key});
+class BiteBloomApp extends ConsumerWidget {
+  const BiteBloomApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     return MaterialApp(
-      title: 'Caliora',
+      title: 'BiteBloom',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

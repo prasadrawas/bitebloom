@@ -106,7 +106,7 @@ class ExportService {
 
     final dir = await getTemporaryDirectory();
     final fileName =
-        'caliora_meals_${DateFormat('yyyyMMdd').format(startDate)}_${DateFormat('yyyyMMdd').format(endDate)}.csv';
+        'bitebloom_meals_${DateFormat('yyyyMMdd').format(startDate)}_${DateFormat('yyyyMMdd').format(endDate)}.csv';
     final file = File('${dir.path}/$fileName');
     await file.writeAsString(csvData);
 
@@ -115,7 +115,7 @@ class ExportService {
     await SharePlus.instance.share(
       ShareParams(
         files: [XFile(file.path)],
-        subject: 'Caliora Meal Report',
+        subject: 'BiteBloom Meal Report',
         text: 'My meal history from ${DateFormat('MMM d').format(startDate)} to ${DateFormat('MMM d').format(endDate)}',
       ),
     );

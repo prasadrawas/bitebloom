@@ -1,6 +1,6 @@
-# caliora
+# BiteBloom
 
-A new Flutter project.
+AI-powered nutrition tracking app that analyzes food from photos.
 
 ## Getting Started
 

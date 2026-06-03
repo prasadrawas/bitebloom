@@ -259,7 +259,7 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   static const _titles = [
-    'Caliora',
+    'BiteBloom',
     'Food Diary',
     'Snap',
     'Progress',
