@@ -60,6 +60,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submitEmailAuth() async {
     if (!_formKey.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
 
     setState(() => _isLoading = true);
     try {
