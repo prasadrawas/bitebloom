@@ -14,6 +14,15 @@ class AppConfig {
       dotenv.env['GEMINI_API_KEY'] ?? '';
   static String get geminiModel =>
       dotenv.env['GEMINI_MODEL'] ?? 'gemini-2.5-flash';
+  static List<String> get geminiModels {
+    final primary = geminiModel;
+    final fallbacks = (dotenv.env['GEMINI_FALLBACK_MODELS'] ?? '')
+        .split(',')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+    return [primary, ...fallbacks];
+  }
   static double get geminiTemperature =>
       double.tryParse(dotenv.env['GEMINI_TEMPERATURE'] ?? '') ?? 0.3;
   static int get geminiMaxTokens =>

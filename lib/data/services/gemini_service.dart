@@ -29,27 +29,23 @@ class GeminiService {
       promptText += '\n\nUser notes: $notes';
     }
 
-    final url =
-        'https://generativelanguage.googleapis.com/v1beta/models/${AppConfig.geminiModel}:generateContent?key=$_apiKey';
+    final requestData = {
+      'contents': [
+        {
+          'parts': [
+            {'text': promptText},
+            {'inline_data': {'mime_type': 'image/jpeg', 'data': base64Image}},
+          ]
+        }
+      ],
+      'generationConfig': {
+        'temperature': AppConfig.geminiTemperature,
+        'maxOutputTokens': AppConfig.geminiMaxTokens,
+      },
+    };
 
     try {
-      final stopwatch = Stopwatch()..start();
-      final response = await _dio.post(url, data: {
-        'contents': [
-          {
-            'parts': [
-              {'text': promptText},
-              {'inline_data': {'mime_type': 'image/jpeg', 'data': base64Image}},
-            ]
-          }
-        ],
-        'generationConfig': {
-          'temperature': AppConfig.geminiTemperature,
-          'maxOutputTokens': AppConfig.geminiMaxTokens,
-        },
-      });
-      stopwatch.stop();
-      log.i('[Gemini] Response in ${stopwatch.elapsedMilliseconds}ms');
+      final response = await _postWithFallback(requestData);
 
       final json = _parseResponse(response.data);
       if (json == null) return null;
@@ -69,9 +65,8 @@ class GeminiService {
         items: items,
         confidence: json['confidence'] ?? 'medium',
       );
-    } on DioException catch (e) {
-      final errorMsg = e.response?.data?['error']?['message'] ?? e.message ?? 'Unknown error';
-      throw GeminiAnalysisException('Failed to analyze food: $errorMsg');
+    } on GeminiAnalysisException {
+      rethrow;
     } catch (e, st) {
       log.e('[Gemini] Error: $e\n$st');
       throw GeminiAnalysisException('Failed to analyze food: $e');
@@ -118,22 +113,18 @@ Return ONLY JSON, no text, no markdown:
   ]
 }''';
 
-    final url =
-        'https://generativelanguage.googleapis.com/v1beta/models/${AppConfig.geminiModel}:generateContent?key=$_apiKey';
+    final requestData = {
+      'contents': [
+        {'parts': [{'text': prompt}]}
+      ],
+      'generationConfig': {
+        'temperature': AppConfig.geminiTemperature,
+        'maxOutputTokens': AppConfig.geminiMaxTokens,
+      },
+    };
 
     try {
-      final stopwatch = Stopwatch()..start();
-      final response = await _dio.post(url, data: {
-        'contents': [
-          {'parts': [{'text': prompt}]}
-        ],
-        'generationConfig': {
-          'temperature': AppConfig.geminiTemperature,
-          'maxOutputTokens': AppConfig.geminiMaxTokens,
-        },
-      });
-      stopwatch.stop();
-      log.i('[Gemini] Recalculation in ${stopwatch.elapsedMilliseconds}ms');
+      final response = await _postWithFallback(requestData);
 
       final json = _parseResponse(response.data);
       if (json == null) return null;
@@ -156,12 +147,43 @@ Return ONLY JSON, no text, no markdown:
       }
 
       return result;
-    } on DioException catch (e) {
-      final errorMsg = e.response?.data?['error']?['message'] ?? e.message ?? 'Unknown error';
-      throw GeminiAnalysisException('Recalculation failed: $errorMsg');
+    } on GeminiAnalysisException {
+      rethrow;
     } catch (e) {
       throw GeminiAnalysisException('Recalculation failed: $e');
     }
+  }
+
+  /// POST to Gemini API with automatic model fallback on 429 (quota exceeded).
+  Future<Response> _postWithFallback(Map<String, dynamic> requestData) async {
+    final models = AppConfig.geminiModels;
+    DioException? lastError;
+
+    for (final model in models) {
+      final url =
+          'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$_apiKey';
+      try {
+        final stopwatch = Stopwatch()..start();
+        final response = await _dio.post(url, data: requestData);
+        stopwatch.stop();
+        log.i('[Gemini] $model responded in ${stopwatch.elapsedMilliseconds}ms');
+        return response;
+      } on DioException catch (e) {
+        lastError = e;
+        final status = e.response?.statusCode;
+        if (status == 429 || status == 503) {
+          log.w('[Gemini] $model quota exceeded (HTTP $status), trying next model...');
+          continue;
+        }
+        // Non-quota error — don't retry
+        final errorMsg = e.response?.data?['error']?['message'] ?? e.message ?? 'Unknown error';
+        throw GeminiAnalysisException('Analysis failed: $errorMsg');
+      }
+    }
+
+    // All models exhausted
+    final errorMsg = lastError?.response?.data?['error']?['message'] ?? 'All models quota exceeded';
+    throw GeminiAnalysisException('All AI models are currently at capacity. Please try again later. ($errorMsg)');
   }
 
   Map<String, dynamic>? _parseResponse(dynamic data) {
