@@ -4,6 +4,9 @@ Your AI Nutrition Companion — snap a photo of any meal and instantly get detai
 
 **Website:** [bitebloom.prasadrawas.online](https://bitebloom.prasadrawas.online)
 
+**Legal:**
+[Privacy Policy](https://bitebloom.prasadrawas.online/privacy.html) · [Terms of Service](https://bitebloom.prasadrawas.online/terms.html) · [Disclaimer](https://bitebloom.prasadrawas.online/disclaimer.html)
+
 ## Features
 
 - **AI Meal Analysis** — Take a photo and get per-item nutrition breakdown (16 nutrients) powered by Google Gemini

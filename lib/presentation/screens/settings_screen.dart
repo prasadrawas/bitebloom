@@ -13,6 +13,7 @@ import '../../providers/profile_provider.dart';
 import '../../providers/reminder_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../widgets/shimmer_loader.dart';
+import 'legal_screen.dart';
 import 'profile_edit_screen.dart';
 import 'scan_history_screen.dart';
 
@@ -863,12 +864,68 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             );
           }),
           const SizedBox(height: 8),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, bottom: 8),
+            child: Text('Legal',
+                style: TextStyle(
+                    color: C.of(context).text30,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5)),
+          ),
+          _settingsTile(
+            icon: Icons.privacy_tip_outlined,
+            title: 'Privacy Policy',
+            subtitle: 'How we handle your data',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const LegalScreen(
+                  title: 'Privacy Policy',
+                  url: 'https://bitebloom.prasadrawas.online/privacy.html',
+                ),
+              ),
+            ),
+            delay: 350,
+          ),
+          _settingsTile(
+            icon: Icons.description_outlined,
+            title: 'Terms of Service',
+            subtitle: 'Terms and conditions',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const LegalScreen(
+                  title: 'Terms of Service',
+                  url: 'https://bitebloom.prasadrawas.online/terms.html',
+                ),
+              ),
+            ),
+            delay: 375,
+          ),
+          _settingsTile(
+            icon: Icons.info_outline,
+            title: 'Disclaimer',
+            subtitle: 'Health and accuracy information',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const LegalScreen(
+                  title: 'Disclaimer',
+                  url: 'https://bitebloom.prasadrawas.online/disclaimer.html',
+                ),
+              ),
+            ),
+            delay: 400,
+          ),
+          const SizedBox(height: 8),
           _settingsTile(
             icon: Icons.logout,
             title: 'Sign Out',
             subtitle: 'Sign out of your account',
             onTap: _signOut,
-            delay: 400,
+            delay: 450,
           ),
           _settingsTile(
             icon: Icons.delete_forever,
