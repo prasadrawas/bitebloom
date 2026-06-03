@@ -4,9 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/config/app_config.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/app_logger.dart';
+import '../../data/services/notification_service.dart';
+import '../../providers/reminder_provider.dart';
 import '../../data/models/analyzed_item.dart';
 import '../../data/models/meal_entry.dart';
 import '../../data/models/scan_history.dart';
@@ -1556,6 +1559,8 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
         _mealName = '';
         _hasEdits = false;
       });
+
+      _maybeShowReminderPrompt();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1571,6 +1576,63 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         setSheetState(() {});
+      }
+    }
+  }
+
+  Future<void> _maybeShowReminderPrompt() async {
+    final prefs = await SharedPreferences.getInstance();
+    final asked = prefs.getBool('reminder_prompt_shown') ?? false;
+    final alreadyEnabled = ref.read(reminderProvider).enabled;
+    if (asked || alreadyEnabled || !mounted) return;
+
+    await prefs.setBool('reminder_prompt_shown', true);
+
+    // Small delay so the meal success snackbar is visible first
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (!mounted) return;
+
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: C.of(context).card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Enable Meal Reminders?',
+          style: TextStyle(
+            color: C.of(context).text,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: Text(
+          'Great job logging your meal! Would you like daily reminders so you never forget to track your breakfast, lunch, and dinner?',
+          style: TextStyle(color: C.of(context).text54, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Not Now',
+                style: TextStyle(color: C.of(context).text30)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.accentGreen,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Yes, Remind Me'),
+          ),
+        ],
+      ),
+    );
+
+    if (accepted == true && mounted) {
+      await NotificationService().init();
+      final granted = await NotificationService().requestPermission();
+      if (granted) {
+        ref.read(reminderProvider.notifier).toggle();
       }
     }
   }

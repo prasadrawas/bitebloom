@@ -9,6 +9,7 @@ import '../../core/utils/app_logger.dart';
 import '../../data/services/export_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/profile_provider.dart';
+import '../../providers/reminder_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../widgets/shimmer_loader.dart';
 import 'profile_edit_screen.dart';
@@ -695,26 +696,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               delay: 250,
             );
           }),
-          _settingsTile(
-            icon: Icons.notifications_outlined,
-            title: 'Reminders',
-            subtitle: 'Meal logging reminders',
-            trailing: Switch(
-              value: false,
-              onChanged: (_) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Notification reminders coming soon!'),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                );
-              },
-              activeColor: AppColors.accentGreen,
-            ),
-            delay: 300,
-          ),
+          Builder(builder: (context) {
+            final reminders = ref.watch(reminderProvider);
+            return _settingsTile(
+              icon: Icons.notifications_outlined,
+              title: 'Reminders',
+              subtitle: reminders.enabled ? 'Tap to edit times' : 'Meal logging reminders',
+              onTap: reminders.enabled ? _showReminderSheet : null,
+              trailing: Switch(
+                value: reminders.enabled,
+                onChanged: (_) {
+                  HapticFeedback.lightImpact();
+                  ref.read(reminderProvider.notifier).toggle();
+                },
+                activeColor: AppColors.accentGreen,
+              ),
+              delay: 300,
+            );
+          }),
           const SizedBox(height: 8),
           _settingsTile(
             icon: Icons.logout,
@@ -778,6 +777,100 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _targetDivider() {
     return Container(width: 1, height: 28, color: C.of(context).glassBorder);
+  }
+
+  void _showReminderSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Consumer(
+        builder: (context, ref, _) {
+          final reminders = ref.watch(reminderProvider);
+          String fmt(int h, int m) {
+            final period = h >= 12 ? 'PM' : 'AM';
+            final hour = h > 12 ? h - 12 : (h == 0 ? 12 : h);
+            return '$hour:${m.toString().padLeft(2, '0')} $period';
+          }
+
+          Future<void> pickTime(String meal, int curH, int curM) async {
+            final picked = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay(hour: curH, minute: curM),
+            );
+            if (picked != null) {
+              ref
+                  .read(reminderProvider.notifier)
+                  .updateTime(meal, picked.hour, picked.minute);
+            }
+          }
+
+          Widget reminderRow(String label, String meal, int h, int m) {
+            return ListTile(
+              dense: true,
+              title: Text(label,
+                  style: TextStyle(
+                      color: C.of(context).text, fontWeight: FontWeight.w600)),
+              trailing: TextButton(
+                onPressed: () => pickTime(meal, h, m),
+                child: Text(fmt(h, m),
+                    style: const TextStyle(
+                        color: AppColors.accentGreen,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15)),
+              ),
+            );
+          }
+
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: C.of(context).bg,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: C.of(context).text30,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Meal Reminders',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: C.of(context).text,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Tap a time to change it',
+                  style:
+                      TextStyle(fontSize: 13, color: C.of(context).text30),
+                ),
+                const SizedBox(height: 12),
+                reminderRow('Breakfast', 'breakfast', reminders.breakfastHour,
+                    reminders.breakfastMinute),
+                reminderRow('Lunch', 'lunch', reminders.lunchHour,
+                    reminders.lunchMinute),
+                reminderRow('Dinner', 'dinner', reminders.dinnerHour,
+                    reminders.dinnerMinute),
+                const SizedBox(height: 16),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _settingsTile({
