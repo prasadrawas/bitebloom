@@ -83,6 +83,10 @@ ul, ol {
   background-clip: text;
 }
 
+.text-accent {
+  color: var(--accent);
+}
+
 .section-title {
   font-family: var(--font-heading);
   font-size: 2.5rem;
