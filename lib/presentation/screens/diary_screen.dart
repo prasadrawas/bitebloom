@@ -248,6 +248,27 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
+                    // Macro Summary
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: C.of(context).card,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: C.of(context).glassBorder),
+                      ),
+                      child: Row(
+                        children: [
+                          _macroCol('${meal.calories}', 'kcal', AppColors.accentGreen),
+                          _macroDivider(),
+                          _macroCol('${meal.protein.toStringAsFixed(1)}g', 'Protein', AppColors.protein),
+                          _macroDivider(),
+                          _macroCol('${meal.carbs.toStringAsFixed(1)}g', 'Carbs', AppColors.carbs),
+                          _macroDivider(),
+                          _macroCol('${meal.fat.toStringAsFixed(1)}g', 'Fat', AppColors.fat),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     // Items
                     Text('Items', style: TextStyle(
                       fontSize: 14, fontWeight: FontWeight.w600, color: C.of(context).text54)),
@@ -301,27 +322,6 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
                           ],
                         ),
                       ),
-                    const SizedBox(height: 16),
-                    // Macro Summary
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: C.of(context).card,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: C.of(context).glassBorder),
-                      ),
-                      child: Row(
-                        children: [
-                          _macroCol('${meal.calories}', 'kcal', AppColors.accentGreen),
-                          _macroDivider(),
-                          _macroCol('${meal.protein.toStringAsFixed(1)}g', 'Protein', AppColors.protein),
-                          _macroDivider(),
-                          _macroCol('${meal.carbs.toStringAsFixed(1)}g', 'Carbs', AppColors.carbs),
-                          _macroDivider(),
-                          _macroCol('${meal.fat.toStringAsFixed(1)}g', 'Fat', AppColors.fat),
-                        ],
-                      ),
-                    ),
                     const SizedBox(height: 16),
                     // Vitamins & Minerals
                     if (microPills.isNotEmpty) ...[
