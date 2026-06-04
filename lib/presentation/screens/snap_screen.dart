@@ -584,7 +584,7 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
             'Gemini API key not configured. Add GEMINI_API_KEY to your .env file');
       }
 
-      final gemini = GeminiService(apiKey: apiKey);
+      final gemini = ref.read(geminiServiceProvider);
       final notes = _notesController.text.trim();
       final geminiResult = await gemini.analyzeFood(_imageFile!, notes: notes);
 
@@ -1488,8 +1488,7 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
     setState(() {});
 
     try {
-      final apiKey = AppConfig.geminiApiKey;
-      final gemini = GeminiService(apiKey: apiKey);
+      final gemini = ref.read(geminiServiceProvider);
 
       // For first-time AI analysis, reset isUserEdited so all items get analysed
       if (forceAll) {
