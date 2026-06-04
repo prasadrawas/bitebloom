@@ -55,7 +55,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       await _handleAuthSuccess(credential);
     } catch (e) {
       if (!mounted) return;
-      _showError('Sign in failed: $e');
+      final msg = e.toString();
+      if (msg.contains('network') || msg.contains('socket') || msg.contains('timeout')) {
+        _showError('Please check your internet connection and try again.');
+      } else if (msg.contains('canceled') || msg.contains('cancelled')) {
+        // User cancelled — do nothing
+      } else {
+        _showError('Google sign-in failed. Please try again.');
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
