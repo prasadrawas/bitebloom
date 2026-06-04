@@ -14,6 +14,7 @@ Your AI Nutrition Companion — snap a photo of any meal and instantly get detai
 - **Food Diary** — Browse and review meals logged by date
 - **Progress Tracking** — Weekly and monthly charts for calories, macros, and nutrition trends
 - **Meal Reminders** — Customizable daily notifications for breakfast, lunch, and dinner
+- **Onboarding** — Interactive walkthrough on first home visit to guide new users
 - **Email & Google Auth** — Sign up/sign in with email and password, or continue with Google. Includes forgot password and secure account deletion with re-authentication
 - **Dark & Light Themes** — Material 3 dual-theme design
 - **Offline Support** — Firestore offline persistence for uninterrupted tracking

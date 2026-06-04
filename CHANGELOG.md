@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.1 (2026-06-04)
+
+### Bug Fixes
+- Fixed Google Sign-In failing in release builds (added Play App Signing SHA-1)
+- Fixed camera and barcode scanner crash in release mode (ProGuard rules for CameraX/ML Kit)
+- Fixed oval-shaped loading spinner on login button
+
+### Improvements
+- Moved onboarding screen to first home visit instead of after registration
+- New users now go directly to profile setup after sign-up for a smoother flow
+- Added tappable Terms of Service and Privacy Policy links on login screen
+- Added "Created by Prasad Rawas" to splash and settings screens
+
 ## 1.0.0 (2026-06-03)
 
 ### Features
