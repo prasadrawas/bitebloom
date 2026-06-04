@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:dio/dio.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:image/image.dart' as img;
 import '../../core/config/app_config.dart';
 import '../../core/constants/app_strings.dart';
@@ -9,13 +9,7 @@ import '../../core/utils/app_logger.dart';
 import '../models/analyzed_item.dart';
 
 class GeminiService {
-  final String _apiKey;
-  final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 30),
-  ));
-
-  GeminiService({required String apiKey}) : _apiKey = apiKey;
+  GeminiService();
 
   /// Analyze food image — returns per-item nutrition breakdown.
   Future<GeminiResult?> analyzeFood(File imageFile, {String notes = ''}) async {
@@ -24,7 +18,6 @@ class GeminiService {
     log.d('[Gemini] Image size: $originalSize bytes');
 
     final compressedBytes = await _compressImage(imageFile);
-    final base64Image = base64Encode(compressedBytes);
     log.d('[Gemini] Compressed: ${compressedBytes.length} bytes');
 
     var promptText = AppStrings.geminiPrompt;
@@ -32,25 +25,13 @@ class GeminiService {
       promptText += '\n\nUser notes: $notes';
     }
 
-    final requestData = {
-      'contents': [
-        {
-          'parts': [
-            {'text': promptText},
-            {'inline_data': {'mime_type': 'image/jpeg', 'data': base64Image}},
-          ]
-        }
-      ],
-      'generationConfig': {
-        'temperature': AppConfig.geminiTemperature,
-        'maxOutputTokens': AppConfig.geminiMaxTokens,
-      },
-    };
-
     try {
-      final response = await _postWithFallback(requestData);
+      final response = await _generateWithFallback(
+        prompt: promptText,
+        imageBytes: compressedBytes,
+      );
 
-      final json = _parseResponse(response.data);
+      final json = _parseResponse(response);
       if (json == null) return null;
 
       final itemsJson = json['items'] as List? ?? [];
@@ -77,7 +58,6 @@ class GeminiService {
   }
 
   /// Recalculate nutrition for edited items (text-only, no image).
-  /// Only recalculates non-user-edited items.
   Future<List<AnalyzedItem>?> recalculateItems(List<AnalyzedItem> items) async {
     final toRecalc = items.where((i) => !i.isUserEdited && i.name.trim().isNotEmpty).toList();
     if (toRecalc.isEmpty) return items;
@@ -116,20 +96,10 @@ Return ONLY JSON, no text, no markdown:
   ]
 }''';
 
-    final requestData = {
-      'contents': [
-        {'parts': [{'text': prompt}]}
-      ],
-      'generationConfig': {
-        'temperature': AppConfig.geminiTemperature,
-        'maxOutputTokens': AppConfig.geminiMaxTokens,
-      },
-    };
-
     try {
-      final response = await _postWithFallback(requestData);
+      final response = await _generateWithFallback(prompt: prompt);
 
-      final json = _parseResponse(response.data);
+      final json = _parseResponse(response);
       if (json == null) return null;
 
       final recalcItems = (json['items'] as List? ?? [])
@@ -157,48 +127,64 @@ Return ONLY JSON, no text, no markdown:
     }
   }
 
-  /// POST to Gemini API with automatic model fallback on 429 (quota exceeded).
-  Future<Response> _postWithFallback(Map<String, dynamic> requestData) async {
+  /// Generate content with automatic model fallback.
+  Future<String> _generateWithFallback({
+    required String prompt,
+    Uint8List? imageBytes,
+  }) async {
     final models = AppConfig.geminiModels;
-    DioException? lastError;
+    Object? lastError;
 
-    for (final model in models) {
-      final url =
-          'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$_apiKey';
+    for (final modelName in models) {
       try {
+        final model = FirebaseAI.googleAI().generativeModel(
+          model: modelName,
+          generationConfig: GenerationConfig(
+            temperature: AppConfig.geminiTemperature,
+            maxOutputTokens: AppConfig.geminiMaxTokens,
+          ),
+        );
+
+        final content = <Part>[
+          TextPart(prompt),
+          if (imageBytes != null)
+            InlineDataPart('image/jpeg', imageBytes),
+        ];
+
         final stopwatch = Stopwatch()..start();
-        final response = await _dio.post(url, data: requestData);
+        final response = await model.generateContent([Content('user', content)])
+            .timeout(const Duration(seconds: 30));
         stopwatch.stop();
-        log.i('[Gemini] $model responded in ${stopwatch.elapsedMilliseconds}ms');
-        return response;
-      } on DioException catch (e) {
+        log.i('[Gemini] $modelName responded in ${stopwatch.elapsedMilliseconds}ms');
+
+        final text = response.text;
+        if (text == null || text.isEmpty) {
+          throw GeminiAnalysisException('Empty response from AI');
+        }
+        return text;
+      } catch (e) {
         lastError = e;
-        final status = e.response?.statusCode;
-        final isRetryable = status == 429 || status == 503 ||
-            e.type == DioExceptionType.connectionTimeout ||
-            e.type == DioExceptionType.receiveTimeout ||
-            e.type == DioExceptionType.connectionError;
+        final msg = e.toString().toLowerCase();
+        final isRetryable = msg.contains('429') ||
+            msg.contains('503') ||
+            msg.contains('quota') ||
+            msg.contains('resource exhausted') ||
+            msg.contains('timeout') ||
+            msg.contains('unavailable');
         if (isRetryable) {
-          log.w('[Gemini] $model failed (${status ?? e.type}), trying next model...');
+          log.w('[Gemini] $modelName failed ($e), trying next model...');
           continue;
         }
-        // Non-retryable error — don't retry
-        final errorMsg = e.response?.data?['error']?['message'] ?? e.message ?? 'Unknown error';
-        throw GeminiAnalysisException('Analysis failed: $errorMsg');
+        if (e is GeminiAnalysisException) rethrow;
+        throw GeminiAnalysisException('Analysis failed: $e');
       }
     }
 
-    // All models exhausted
-    final errorMsg = lastError?.response?.data?['error']?['message'] ?? 'All models quota exceeded';
-    throw GeminiAnalysisException('All AI models are currently at capacity. Please try again later. ($errorMsg)');
+    throw GeminiAnalysisException(
+        'All AI models are currently at capacity. Please try again later. ($lastError)');
   }
 
-  Map<String, dynamic>? _parseResponse(dynamic data) {
-    final text = data['candidates']?[0]?['content']?['parts']?[0]?['text'] as String?;
-    if (text == null) {
-      log.w('[Gemini] Response text is null');
-      return null;
-    }
+  Map<String, dynamic>? _parseResponse(String text) {
     log.d('[Gemini] Raw:\n$text');
 
     String clean = text.trim();

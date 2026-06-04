@@ -578,12 +578,6 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
     });
 
     try {
-      final apiKey = AppConfig.geminiApiKey;
-      if (apiKey.isEmpty) {
-        throw GeminiAnalysisException(
-            'Gemini API key not configured. Add GEMINI_API_KEY to your .env file');
-      }
-
       final gemini = ref.read(geminiServiceProvider);
       final notes = _notesController.text.trim();
       final geminiResult = await gemini.analyzeFood(_imageFile!, notes: notes);
