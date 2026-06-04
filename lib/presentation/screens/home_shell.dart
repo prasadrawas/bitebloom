@@ -30,6 +30,7 @@ class _HomeShellState extends State<HomeShell> {
   String? _pendingBarcode;
   bool _pendingManual = false;
   int _snapKey = 0;
+  DateTime? _lastBackPress;
 
   List<Widget> get _screens => [
     const HomeScreen(),
@@ -238,7 +239,41 @@ class _HomeShellState extends State<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+
+        // If not on Home tab, go to Home tab first
+        if (_currentIndex != 0) {
+          setState(() {
+            _pendingSource = null;
+            _pendingBarcode = null;
+            _pendingManual = false;
+            _currentIndex = 0;
+          });
+          return;
+        }
+
+        // On Home tab — double back to exit
+        final now = DateTime.now();
+        if (_lastBackPress != null &&
+            now.difference(_lastBackPress!) < const Duration(seconds: 2)) {
+          SystemNavigator.pop();
+          return;
+        }
+        _lastBackPress = now;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Press back again to exit'),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      },
+      child: Stack(
       children: [
         Scaffold(
           backgroundColor: C.of(context).bg,
@@ -295,6 +330,7 @@ class _HomeShellState extends State<HomeShell> {
             onDismiss: () => setState(() => _showTooltips = false),
           ),
       ],
+    ),
     );
   }
 
