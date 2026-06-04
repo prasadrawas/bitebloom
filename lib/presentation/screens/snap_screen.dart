@@ -1044,7 +1044,8 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
                                 onPressed: _isRecalculating
                                     ? null
                                     : () async {
-                                        await _reAnalyse(setSheetState);
+                                        await _reAnalyse(setSheetState,
+                                            forceAll: !_hasBeenAnalysed);
                                       },
                                 icon: _isRecalculating
                                     ? const SizedBox(
@@ -1458,7 +1459,8 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
 
   // ── Re-Analyse ────────────────────────────────────────────────────────
 
-  Future<void> _reAnalyse(StateSetter setSheetState) async {
+  Future<void> _reAnalyse(StateSetter setSheetState,
+      {bool forceAll = false}) async {
     _isRecalculating = true;
     setSheetState(() {});
     setState(() {});
@@ -1466,6 +1468,14 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
     try {
       final apiKey = AppConfig.geminiApiKey;
       final gemini = GeminiService(apiKey: apiKey);
+
+      // For first-time AI analysis, reset isUserEdited so all items get analysed
+      if (forceAll) {
+        for (final item in _analyzedItems) {
+          item.isUserEdited = false;
+        }
+      }
+
       final result = await gemini.recalculateItems(_analyzedItems);
 
       if (result != null && mounted) {
