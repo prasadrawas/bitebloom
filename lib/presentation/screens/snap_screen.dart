@@ -1638,6 +1638,37 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
     }
   }
 
+  List<Widget> _scanCorners(BuildContext context) {
+    const size = 24.0;
+    const thickness = 3.0;
+    const margin = 32.0;
+    final color = AppColors.accentGreen;
+
+    Widget corner(Alignment align, {bool flipH = false, bool flipV = false}) {
+      return Positioned(
+        top: align.y < 0 ? margin : null,
+        bottom: align.y > 0 ? margin : null,
+        left: align.x < 0 ? margin : null,
+        right: align.x > 0 ? margin : null,
+        child: SizedBox(
+          width: size,
+          height: size,
+          child: CustomPaint(
+            painter: _CornerPainter(color: color, thickness: thickness,
+                flipH: flipH, flipV: flipV),
+          ),
+        ),
+      );
+    }
+
+    return [
+      corner(Alignment.topLeft),
+      corner(Alignment.topRight, flipH: true),
+      corner(Alignment.bottomLeft, flipV: true),
+      corner(Alignment.bottomRight, flipH: true, flipV: true),
+    ];
+  }
+
   // ── Build ─────────────────────────────────────────────────────────────
 
   @override
@@ -1667,56 +1698,126 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
                           Container(
                             margin: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.6),
+                              color: Colors.black.withValues(alpha: 0.7),
                               borderRadius: BorderRadius.circular(24),
                             ),
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.accentGreen
-                                          .withValues(alpha: 0.1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const SizedBox(
-                                      width: 40,
-                                      height: 40,
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.accentGreen,
-                                        strokeWidth: 3,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Text(
-                                    'Analyzing your meal...',
-                                    style: TextStyle(
-                                      color: C.of(context).text,
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  )
-                                      .animate(
-                                        onPlay: (c) => c.repeat(),
+                            child: Stack(
+                              children: [
+                                // Scanning line animation
+                                Positioned.fill(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(24),
+                                    child: Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Container(
+                                        height: 2,
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.transparent,
+                                              AppColors.accentGreen,
+                                              Colors.transparent,
+                                            ],
+                                          ),
+                                        ),
                                       )
-                                      .shimmer(
-                                        duration: 1500.ms,
-                                        color: AppColors.accentGreen
-                                            .withValues(alpha: 0.3),
-                                      ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    'Identifying food items and nutrients',
-                                    style: TextStyle(
-                                      color: C.of(context).text30,
-                                      fontSize: 13,
+                                          .animate(
+                                            onPlay: (c) => c.repeat(),
+                                          )
+                                          .slideY(
+                                            begin: 0,
+                                            end: 150,
+                                            duration: 2000.ms,
+                                            curve: Curves.easeInOut,
+                                          ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                // Corner brackets
+                                ..._scanCorners(context),
+                                // Center content
+                                Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.document_scanner_outlined,
+                                        color: AppColors.accentGreen,
+                                        size: 48,
+                                      )
+                                          .animate(
+                                            onPlay: (c) => c.repeat(reverse: true),
+                                          )
+                                          .scale(
+                                            begin: const Offset(1.0, 1.0),
+                                            end: const Offset(1.15, 1.15),
+                                            duration: 1200.ms,
+                                          ),
+                                      const SizedBox(height: 20),
+                                      Text(
+                                        'Scanning your meal...',
+                                        style: TextStyle(
+                                          color: C.of(context).text,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      )
+                                          .animate(
+                                            onPlay: (c) => c.repeat(),
+                                          )
+                                          .shimmer(
+                                            duration: 1500.ms,
+                                            color: AppColors.accentGreen
+                                                .withValues(alpha: 0.3),
+                                          ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Identifying food items & nutrients',
+                                        style: TextStyle(
+                                          color: C.of(context).text54,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 14, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.accentGreen
+                                              .withValues(alpha: 0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: AppColors.accentGreen
+                                                .withValues(alpha: 0.2),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.timer_outlined,
+                                                color: AppColors.accentGreen,
+                                                size: 14),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              'This may take 10–15 seconds',
+                                              style: TextStyle(
+                                                color: AppColors.accentGreen,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                          .animate()
+                                          .fadeIn(
+                                              duration: 600.ms,
+                                              delay: 2000.ms),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         // Retake button (top-right)
@@ -1937,4 +2038,54 @@ class _EditorFieldData {
   final String label;
   final TextEditingController ctrl;
   _EditorFieldData(this.label, this.ctrl);
+}
+
+class _CornerPainter extends CustomPainter {
+  final Color color;
+  final double thickness;
+  final bool flipH;
+  final bool flipV;
+
+  _CornerPainter({
+    required this.color,
+    required this.thickness,
+    this.flipH = false,
+    this.flipV = false,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = thickness
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    final path = Path();
+    final w = size.width;
+    final h = size.height;
+
+    if (!flipH && !flipV) {
+      path.moveTo(0, h);
+      path.lineTo(0, 0);
+      path.lineTo(w, 0);
+    } else if (flipH && !flipV) {
+      path.moveTo(w, h);
+      path.lineTo(w, 0);
+      path.lineTo(0, 0);
+    } else if (!flipH && flipV) {
+      path.moveTo(0, 0);
+      path.lineTo(0, h);
+      path.lineTo(w, h);
+    } else {
+      path.moveTo(w, 0);
+      path.lineTo(w, h);
+      path.lineTo(0, h);
+    }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
