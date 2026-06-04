@@ -27,11 +27,9 @@ class AuthService {
       log.d('[Auth] Google user: ${googleUser.email}');
 
       final idToken = googleUser.authentication.idToken;
-      final clientAuth = await googleUser.authorizationClient
-          .authorizationForScopes(<String>[]);
+      log.d('[Auth] Got idToken: ${idToken != null}');
 
       final credential = GoogleAuthProvider.credential(
-        accessToken: clientAuth?.accessToken,
         idToken: idToken,
       );
 
@@ -159,10 +157,7 @@ class AuthService {
     try {
       final googleUser = await _googleSignIn.authenticate();
       final idToken = googleUser.authentication.idToken;
-      final clientAuth = await googleUser.authorizationClient
-          .authorizationForScopes(<String>[]);
       final credential = GoogleAuthProvider.credential(
-        accessToken: clientAuth?.accessToken,
         idToken: idToken,
       );
       await _auth.currentUser!.reauthenticateWithCredential(credential);
