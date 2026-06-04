@@ -1745,12 +1745,7 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Mode toggle (only when used as tab)
-            if (widget.initialSource == null &&
-                widget.initialBarcode == null &&
-                !widget.initialManual &&
-                _imageFile == null &&
-                _analyzedItems.isEmpty)
+            // Mode toggle
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
                 child: Container(
