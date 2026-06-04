@@ -174,11 +174,15 @@ Return ONLY JSON, no text, no markdown:
       } on DioException catch (e) {
         lastError = e;
         final status = e.response?.statusCode;
-        if (status == 429 || status == 503) {
-          log.w('[Gemini] $model quota exceeded (HTTP $status), trying next model...');
+        final isRetryable = status == 429 || status == 503 ||
+            e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError;
+        if (isRetryable) {
+          log.w('[Gemini] $model failed (${status ?? e.type}), trying next model...');
           continue;
         }
-        // Non-quota error — don't retry
+        // Non-retryable error — don't retry
         final errorMsg = e.response?.data?['error']?['message'] ?? e.message ?? 'Unknown error';
         throw GeminiAnalysisException('Analysis failed: $errorMsg');
       }
