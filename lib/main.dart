@@ -35,7 +35,6 @@ void main() async {
 
   await dotenv.load(fileName: '.env');
   if (kDebugMode) {
-    log.d('[App] GEMINI_API_KEY present: ${AppConfig.geminiApiKey.isNotEmpty}');
     log.d('[App] Gemini model: ${AppConfig.geminiModel}');
   }
 

@@ -9,9 +9,7 @@ class AppConfig {
   static String get cloudinaryUploadPreset =>
       dotenv.env['CLOUDINARY_UPLOAD_PRESET'] ?? 'caliora_meals';
 
-  // ── Gemini AI ──
-  static String get geminiApiKey =>
-      dotenv.env['GEMINI_API_KEY'] ?? '';
+  // ── Gemini AI (via Firebase AI Logic) ──
   static String get geminiModel =>
       dotenv.env['GEMINI_MODEL'] ?? 'gemini-2.5-flash';
   static List<String> get geminiModels {
