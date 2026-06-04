@@ -261,7 +261,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     child: _isLoading
-                        ? const Center(
+                        ? const UnconstrainedBox(
                             child: SizedBox(
                               width: 24,
                               height: 24,
