@@ -1693,8 +1693,17 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
     return Expanded(
       child: GestureDetector(
         onTap: () {
+          if (_snapMode == index) return;
           HapticFeedback.lightImpact();
-          setState(() => _snapMode = index);
+          setState(() {
+            _snapMode = index;
+            _imageFile = null;
+            _analyzedItems = [];
+            _mealName = '';
+            _error = null;
+            _hasEdits = false;
+            _isAnalyzing = false;
+          });
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
