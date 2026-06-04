@@ -6,6 +6,7 @@ import 'package:confetti/confetti.dart';
 import '../../core/config/app_config.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/nutrition_calculator.dart';
+import 'bmi_bmr_info_screen.dart';
 import '../../core/utils/date_utils.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/profile_provider.dart';
@@ -154,67 +155,97 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ? AppColors.warning
                                 : AppColors.error;
 
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: C.of(context).card,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: C.of(context).glassBorder),
+                    return GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BmiBmrInfoScreen(
+                            bmi: bmi,
+                            bmr: bmr,
+                            category: category,
+                          ),
+                        ),
                       ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: C.of(context).card,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: C.of(context).glassBorder),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
                               children: [
-                                Text('BMI',
-                                    style: TextStyle(
-                                        color: C.of(context).text54,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 4),
-                                Text(bmi.toStringAsFixed(1),
-                                    style: TextStyle(
-                                        color: categoryColor,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w800)),
-                                const SizedBox(height: 2),
-                                Text(category,
-                                    style: TextStyle(
-                                        color: categoryColor,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600)),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Text('BMI',
+                                          style: TextStyle(
+                                              color: C.of(context).text54,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600)),
+                                      const SizedBox(height: 4),
+                                      Text(bmi.toStringAsFixed(1),
+                                          style: TextStyle(
+                                              color: categoryColor,
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w800)),
+                                      const SizedBox(height: 2),
+                                      Text(category,
+                                          style: TextStyle(
+                                              color: categoryColor,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600)),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: 1,
+                                  height: 50,
+                                  color: C.of(context).glassBorder,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Text('BMR',
+                                          style: TextStyle(
+                                              color: C.of(context).text54,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600)),
+                                      const SizedBox(height: 4),
+                                      Text(bmr.round().toString(),
+                                          style: TextStyle(
+                                              color: C.of(context).text,
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w800)),
+                                      const SizedBox(height: 2),
+                                      Text('kcal/day',
+                                          style: TextStyle(
+                                              color: C.of(context).text54,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600)),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
-                          ),
-                          Container(
-                            width: 1,
-                            height: 50,
-                            color: C.of(context).glassBorder,
-                          ),
-                          Expanded(
-                            child: Column(
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('BMR',
+                                Text('Tap to learn more',
                                     style: TextStyle(
-                                        color: C.of(context).text54,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 4),
-                                Text(bmr.round().toString(),
-                                    style: TextStyle(
-                                        color: C.of(context).text,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w800)),
-                                const SizedBox(height: 2),
-                                Text('kcal/day',
-                                    style: TextStyle(
-                                        color: C.of(context).text54,
+                                        color: AppColors.accentGreen,
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600)),
+                                const SizedBox(width: 4),
+                                Icon(Icons.arrow_forward_ios,
+                                    color: AppColors.accentGreen, size: 10),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     )
                         .animate()
