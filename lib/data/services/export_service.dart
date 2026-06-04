@@ -104,20 +104,30 @@ class ExportService {
       return s;
     }).join(',')).join('\n');
 
-    final dir = await getTemporaryDirectory();
-    final fileName =
-        'bitebloom_meals_${DateFormat('yyyyMMdd').format(startDate)}_${DateFormat('yyyyMMdd').format(endDate)}.csv';
-    final file = File('${dir.path}/$fileName');
-    await file.writeAsString(csvData);
+    try {
+      final dir = await getTemporaryDirectory();
+      final fileName =
+          'bitebloom_meals_${DateFormat('yyyyMMdd').format(startDate)}_${DateFormat('yyyyMMdd').format(endDate)}.csv';
+      final file = File('${dir.path}/$fileName');
+      await file.writeAsString(csvData);
 
-    log.i('[Export] CSV saved: ${file.path} (${file.lengthSync()} bytes)');
+      log.i('[Export] CSV saved: ${file.path} (${file.lengthSync()} bytes)');
 
-    await SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(file.path)],
-        subject: 'BiteBloom Meal Report',
-        text: 'My meal history from ${DateFormat('MMM d').format(startDate)} to ${DateFormat('MMM d').format(endDate)}',
-      ),
-    );
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          subject: 'BiteBloom Meal Report',
+          text: 'My meal history from ${DateFormat('MMM d').format(startDate)} to ${DateFormat('MMM d').format(endDate)}',
+        ),
+      );
+
+      // Cleanup temp file
+      try {
+        await file.delete();
+      } catch (_) {}
+    } catch (e) {
+      log.e('[Export] Export failed: $e');
+      throw Exception('Failed to export data. Please try again.');
+    }
   }
 }
