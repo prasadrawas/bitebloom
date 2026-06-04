@@ -509,7 +509,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ],
                     );
                   },
-                  loading: () => const SizedBox.shrink(),
+                  loading: () => const ShimmerLoader(height: 180),
                   error: (_, _) => const SizedBox.shrink(),
                 ),
                 const SizedBox(height: 16),
@@ -570,7 +570,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         .fadeIn(duration: 500.ms, delay: 350.ms)
                         .slideX(begin: -0.05, end: 0);
                   },
-                  loading: () => const SizedBox.shrink(),
+                  loading: () => const ShimmerLoader(height: 60),
                   error: (_, _) => const SizedBox.shrink(),
                 ),
                 const SizedBox(height: 16),
