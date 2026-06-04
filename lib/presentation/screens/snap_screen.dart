@@ -625,6 +625,7 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
 
     log.i('[Snap] Barcode lookup: $barcode');
     setState(() {
+      _snapMode = 1;
       _isAnalyzing = true;
       _error = null;
       _imageFile = null;
