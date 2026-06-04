@@ -1800,7 +1800,7 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
                                                 size: 14),
                                             const SizedBox(width: 6),
                                             Text(
-                                              'This may take 10–15 seconds',
+                                              'This may take a few seconds',
                                               style: TextStyle(
                                                 color: AppColors.accentGreen,
                                                 fontSize: 12,
