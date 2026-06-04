@@ -4,29 +4,33 @@ import '../../core/utils/app_logger.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  bool _initialized = false;
 
   User? get currentUser => _auth.currentUser;
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  Future<void> _ensureInitialized() async {
+    if (_initialized) return;
+    await _googleSignIn.initialize();
+    _initialized = true;
+  }
+
   Future<UserCredential?> signInWithGoogle() async {
     log.i('[Auth] Starting Google Sign-In');
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        log.w('[Auth] Google Sign-In cancelled by user');
-        return null;
-      }
+      await _ensureInitialized();
+      final googleUser = await _googleSignIn.authenticate();
       log.d('[Auth] Google user: ${googleUser.email}');
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      log.d('[Auth] Got Google auth tokens (accessToken: ${googleAuth.accessToken != null}, idToken: ${googleAuth.idToken != null})');
+      final idToken = googleUser.authentication.idToken;
+      final clientAuth = await googleUser.authorizationClient
+          .authorizationForScopes(<String>[]);
 
       final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+        accessToken: clientAuth?.accessToken,
+        idToken: idToken,
       );
 
       final userCredential = await _auth.signInWithCredential(credential);
@@ -35,6 +39,13 @@ class AuthService {
       log.d('[Auth] Email: ${userCredential.user?.email}');
       log.d('[Auth] Is new user: ${userCredential.additionalUserInfo?.isNewUser}');
       return userCredential;
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        log.w('[Auth] Google Sign-In cancelled by user');
+        return null;
+      }
+      log.e('[Auth] Google Sign-In failed: ${e.code}');
+      rethrow;
     } catch (e, stackTrace) {
       log.e('[Auth] Sign-in failed: $e');
       log.e('[Auth] Stack trace: $stackTrace');
@@ -115,6 +126,7 @@ class AuthService {
 
   Future<void> signOut() async {
     log.i('[Auth] Signing out user: ${_auth.currentUser?.uid}');
+    await _ensureInitialized();
     await _googleSignIn.signOut();
     await _auth.signOut();
     log.i('[Auth] Sign-out complete');
@@ -141,15 +153,24 @@ class AuthService {
 
   Future<void> reauthenticateWithGoogle() async {
     log.i('[Auth] Re-authenticating with Google');
-    final googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) throw Exception('Google re-auth cancelled');
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    await _auth.currentUser!.reauthenticateWithCredential(credential);
-    log.i('[Auth] Google re-authentication successful');
+    await _ensureInitialized();
+    try {
+      final googleUser = await _googleSignIn.authenticate();
+      final idToken = googleUser.authentication.idToken;
+      final clientAuth = await googleUser.authorizationClient
+          .authorizationForScopes(<String>[]);
+      final credential = GoogleAuthProvider.credential(
+        accessToken: clientAuth?.accessToken,
+        idToken: idToken,
+      );
+      await _auth.currentUser!.reauthenticateWithCredential(credential);
+      log.i('[Auth] Google re-authentication successful');
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        throw Exception('Google re-auth cancelled');
+      }
+      rethrow;
+    }
   }
 
   Future<void> reauthenticateWithEmail(String password) async {
