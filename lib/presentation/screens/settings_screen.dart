@@ -619,13 +619,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       user.uid,
                       {
                         'dailyCalorieTarget':
-                            int.tryParse(calorieController.text) ?? AppConfig.defaultCalorieTarget,
+                            (int.tryParse(calorieController.text) ?? AppConfig.defaultCalorieTarget).clamp(500, 10000),
                         'proteinTarget':
-                            int.tryParse(proteinController.text) ?? AppConfig.defaultProteinTarget,
+                            (int.tryParse(proteinController.text) ?? AppConfig.defaultProteinTarget).clamp(10, 1000),
                         'carbsTarget':
-                            int.tryParse(carbsController.text) ?? AppConfig.defaultCarbsTarget,
+                            (int.tryParse(carbsController.text) ?? AppConfig.defaultCarbsTarget).clamp(10, 1000),
                         'fatTarget':
-                            int.tryParse(fatController.text) ?? AppConfig.defaultFatTarget,
+                            (int.tryParse(fatController.text) ?? AppConfig.defaultFatTarget).clamp(10, 500),
                       },
                     );
 
