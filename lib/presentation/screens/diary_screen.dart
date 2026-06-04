@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -193,6 +194,33 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
+                    // Meal Image
+                    if (meal.imageUrl != null && meal.imageUrl!.isNotEmpty)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 200,
+                          child: CachedNetworkImage(
+                            imageUrl: meal.imageUrl!,
+                            fit: BoxFit.cover,
+                            placeholder: (_, _) => Container(
+                              color: C.of(context).card,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.accentGreen, strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: (_, _, _) => Container(
+                              color: C.of(context).card,
+                              child: Icon(Icons.broken_image_outlined,
+                                  color: C.of(context).text30, size: 40),
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (meal.imageUrl != null && meal.imageUrl!.isNotEmpty)
+                      const SizedBox(height: 16),
                     // Meal Score
                     Container(
                       padding: const EdgeInsets.all(16),
