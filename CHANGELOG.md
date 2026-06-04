@@ -7,11 +7,17 @@
 - Fixed camera and barcode scanner crash in release mode (ProGuard rules for CameraX/ML Kit)
 - Fixed oval-shaped loading spinner on login button
 
+### New Features
+- BMI & BMR display card on home screen with color-coded BMI category
+- BMI & BMR info screen — explains BMI categories, BMR formula, how calorie/macro targets are calculated
+- Keyboard now dismisses on submit across all screens
+
 ### Improvements
 - Moved onboarding screen to first home visit instead of after registration
 - New users now go directly to profile setup after sign-up for a smoother flow
 - Added tappable Terms of Service and Privacy Policy links on login screen
 - Added "Created by Prasad Rawas" to splash and settings screens
+- Fixed Expanded inside Wrap crash on profile edit screen
 
 ## 1.0.0 (2026-06-03)
 
