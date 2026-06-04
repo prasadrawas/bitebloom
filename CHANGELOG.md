@@ -10,6 +10,11 @@
 - Fixed delete snackbar text not visible and not auto-dismissing
 - Disabled Log Meal button when AI detects no food items
 - Pinned Log Meal button at bottom of result sheet (no more scrolling to find it)
+- Fixed manual entry starting with empty untitled item
+- Fixed dismissed item editor still adding empty item to list
+- Fixed Analyse with AI and Re-Analyse not calling Gemini for manual/edited items
+- Log Meal now requires meal name and at least one named item
+- Meal score hidden in manual mode until AI analysis is done
 
 ### New Features
 - BMI & BMR display card on home screen with color-coded BMI category
@@ -17,6 +22,8 @@
 - Capture/Scan/Manual mode toggle on the Snap tab
 - Scanning UI overlay during AI meal analysis with animated scan line and corner brackets
 - Barcode 404 handled gracefully (product not found instead of error)
+- "Analyse with AI" button for manual items to get Gemini nutrition analysis
+- "Re-Analyse" button shown after editing previously analysed items
 - Per-item meal storage — individual food items now saved to Firestore for detailed breakdown
 - Redesigned diary meal details to match snap result sheet UI (meal score, items, macros, vitamins)
 - Meal photo displayed at the top of diary details bottom sheet
