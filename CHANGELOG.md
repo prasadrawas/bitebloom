@@ -14,6 +14,9 @@
 - Capture/Scan/Manual mode toggle on the Snap tab
 - Scanning UI overlay during AI meal analysis with animated scan line and corner brackets
 - Barcode 404 handled gracefully (product not found instead of error)
+- Per-item meal storage — individual food items now saved to Firestore for detailed breakdown
+- Redesigned diary meal details to match snap result sheet UI (meal score, items, macros, vitamins)
+- Meal photo displayed at the top of diary details bottom sheet
 - Meal delete button with confirmation dialog on diary screen
 - Double-tap back to exit with navigate-to-home-first behavior
 - Keyboard now dismisses on submit across all screens
