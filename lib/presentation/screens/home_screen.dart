@@ -44,6 +44,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _checkGoalMet(int consumed, int target) {
+    if (_confettiController.state == ConfettiControllerState.playing) return;
     if (consumed >= (target * AppConfig.goalMetLower) &&
         consumed <= (target * AppConfig.goalMetUpper)) {
       HapticFeedback.mediumImpact();
