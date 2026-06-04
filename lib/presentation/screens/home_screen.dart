@@ -74,7 +74,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ref.invalidate(todayMealsProvider);
             ref.invalidate(dailySummaryProvider);
             ref.invalidate(userProfileProvider);
-            await Future.delayed(const Duration(milliseconds: 500));
+            await ref.read(todayMealsProvider.future);
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
