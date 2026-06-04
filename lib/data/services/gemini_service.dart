@@ -164,6 +164,7 @@ Return ONLY JSON, no text, no markdown:
         return text;
       } catch (e) {
         lastError = e;
+        log.e('[Gemini] $modelName error: $e');
         final msg = e.toString().toLowerCase();
         final isRetryable = msg.contains('429') ||
             msg.contains('503') ||
