@@ -1093,7 +1093,8 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: (_analyzedItems.isEmpty ||
+                          onPressed: (_isSaving ||
+                                  _analyzedItems.isEmpty ||
                                   _analyzedItems.every((i) => i.name.trim().isEmpty) ||
                                   _mealName.trim().isEmpty)
                               ? null
