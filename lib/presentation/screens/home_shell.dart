@@ -4,9 +4,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/theme_colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/animated_bottom_nav.dart';
 import '../widgets/onboarding_tooltip.dart';
 import 'home_screen.dart';
+import 'onboarding_screen.dart';
 import 'diary_screen.dart';
 import 'snap_screen.dart';
 import 'barcode_screen.dart';
@@ -35,12 +37,24 @@ class _HomeShellState extends State<HomeShell> {
   @override
   void initState() {
     super.initState();
-    _checkTooltips();
+    _checkFirstVisit();
   }
 
-  Future<void> _checkTooltips() async {
-    final shouldShow = await OnboardingTooltip.shouldShow();
-    if (shouldShow && mounted) {
+  Future<void> _checkFirstVisit() async {
+    final prefs = await SharedPreferences.getInstance();
+    final onboardingSeen = prefs.getBool('onboarding_seen') ?? false;
+
+    if (!onboardingSeen && mounted) {
+      await prefs.setBool('onboarding_seen', true);
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+      );
+    }
+
+    if (!mounted) return;
+    final shouldShowTooltips = await OnboardingTooltip.shouldShow();
+    if (shouldShowTooltips && mounted) {
       setState(() => _showTooltips = true);
     }
   }

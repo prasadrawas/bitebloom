@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../core/constants/app_colors.dart';
+import '../../core/theme/theme_colors.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/profile_provider.dart';
-import '../../core/theme/theme_colors.dart';
 import 'legal_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -34,22 +35,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final user = credential.user;
     if (user == null || !mounted) return;
 
-    final hasProfile =
-        await ref.read(firestoreServiceProvider).hasProfile(user.uid);
+    final hasProfile = await ref
+        .read(firestoreServiceProvider)
+        .hasProfile(user.uid);
 
     if (!mounted) return;
     if (hasProfile) {
       Navigator.of(context).pushReplacementNamed('/home');
     } else {
-      Navigator.of(context).pushReplacementNamed('/onboarding');
+      Navigator.of(context).pushReplacementNamed('/profile-setup');
     }
   }
 
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
     try {
-      final credential =
-          await ref.read(authServiceProvider).signInWithGoogle();
+      final credential = await ref.read(authServiceProvider).signInWithGoogle();
       if (credential == null || !mounted) return;
       await _handleAuthSuccess(credential);
     } catch (e) {
@@ -101,8 +102,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           content: Text('Password reset link sent to $email'),
           backgroundColor: AppColors.accentGreen,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     } catch (e) {
@@ -131,7 +133,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height -
+              minHeight:
+                  MediaQuery.of(context).size.height -
                   MediaQuery.of(context).padding.top -
                   MediaQuery.of(context).padding.bottom,
             ),
@@ -150,9 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Image.asset('assets/images/app_icon.png'),
                     ),
                   ),
-                )
-                    .animate()
-                    .scale(duration: 800.ms, curve: Curves.elasticOut),
+                ).animate().scale(duration: 800.ms, curve: Curves.elasticOut),
                 const SizedBox(height: 24),
                 Text.rich(
                   TextSpan(
@@ -165,19 +166,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ],
                   ),
                   style: Theme.of(context).textTheme.headlineLarge,
-                )
-                    .animate()
-                    .fadeIn(duration: 600.ms, delay: 200.ms),
+                ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
                 const SizedBox(height: 8),
                 Text(
                   'Track your nutrition with\nthe power of AI',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: C.of(context).text54,
-                      ),
-                )
-                    .animate()
-                    .fadeIn(duration: 600.ms, delay: 400.ms),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(color: C.of(context).text54),
+                ).animate().fadeIn(duration: 600.ms, delay: 400.ms),
                 const SizedBox(height: 40),
 
                 // Email/Password Form
@@ -215,10 +212,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             size: 20,
                           ),
                           onPressed: () => setState(
-                              () => _obscurePassword = !_obscurePassword),
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Password is required';
+                          if (v == null || v.isEmpty)
+                            return 'Password is required';
                           if (_isRegister && v.length < 6) {
                             return 'At least 6 characters';
                           }
@@ -243,9 +242,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(height: 16),
                     ],
                   ),
-                )
-                    .animate()
-                    .fadeIn(duration: 600.ms, delay: 500.ms),
+                ).animate().fadeIn(duration: 600.ms, delay: 500.ms),
 
                 // Submit Button
                 SizedBox(
@@ -261,12 +258,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     child: _isLoading
-                        ? const UnconstrainedBox(
+                        ? const Center(
                             child: SizedBox(
-                              width: 24,
-                              height: 24,
+                              width: 20,
+                              height: 20,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
+                                strokeWidth: 2,
                                 color: Colors.black,
                               ),
                             ),
@@ -279,9 +276,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                   ),
-                )
-                    .animate()
-                    .fadeIn(duration: 600.ms, delay: 600.ms),
+                ).animate().fadeIn(duration: 600.ms, delay: 600.ms),
 
                 const SizedBox(height: 16),
 
@@ -293,7 +288,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       _isRegister
                           ? 'Already have an account?'
                           : "Don't have an account?",
-                      style: TextStyle(color: C.of(context).text54, fontSize: 14),
+                      style: TextStyle(
+                        color: C.of(context).text54,
+                        fontSize: 14,
+                      ),
                     ),
                     TextButton(
                       onPressed: _isLoading
@@ -309,31 +307,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                   ],
-                )
-                    .animate()
-                    .fadeIn(duration: 600.ms, delay: 650.ms),
+                ).animate().fadeIn(duration: 600.ms, delay: 650.ms),
 
                 const SizedBox(height: 8),
 
                 // Divider
                 Row(
                   children: [
-                    Expanded(
-                        child: Divider(color: C.of(context).text12)),
+                    Expanded(child: Divider(color: C.of(context).text12)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'or',
                         style: TextStyle(
-                            color: C.of(context).text30, fontSize: 13),
+                          color: C.of(context).text30,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
-                    Expanded(
-                        child: Divider(color: C.of(context).text12)),
+                    Expanded(child: Divider(color: C.of(context).text12)),
                   ],
-                )
-                    .animate()
-                    .fadeIn(duration: 600.ms, delay: 700.ms),
+                ).animate().fadeIn(duration: 600.ms, delay: 700.ms),
 
                 const SizedBox(height: 16),
 
@@ -369,9 +363,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ],
                     ),
                   ),
-                )
-                    .animate()
-                    .fadeIn(duration: 600.ms, delay: 750.ms),
+                ).animate().fadeIn(duration: 600.ms, delay: 750.ms),
 
                 const SizedBox(height: 20),
                 Text.rich(
@@ -387,14 +379,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const LegalScreen(
-                                    title: 'Terms of Service',
-                                    url: 'https://bitebloom.prasadrawas.online/terms.html',
-                                  ),
-                                ),
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LegalScreen(
+                                title: 'Terms of Service',
+                                url:
+                                    'https://bitebloom.prasadrawas.online/terms.html',
                               ),
+                            ),
+                          ),
                       ),
                       const TextSpan(text: ' and '),
                       TextSpan(
@@ -405,21 +398,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const LegalScreen(
-                                    title: 'Privacy Policy',
-                                    url: 'https://bitebloom.prasadrawas.online/privacy.html',
-                                  ),
-                                ),
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LegalScreen(
+                                title: 'Privacy Policy',
+                                url:
+                                    'https://bitebloom.prasadrawas.online/privacy.html',
                               ),
+                            ),
+                          ),
                       ),
                     ],
                   ),
                   textAlign: TextAlign.center,
-                )
-                    .animate()
-                    .fadeIn(duration: 600.ms, delay: 800.ms),
+                ).animate().fadeIn(duration: 600.ms, delay: 800.ms),
                 const SizedBox(height: 32),
               ],
             ),
@@ -467,8 +459,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: AppColors.error, width: 1.5),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
     );
   }

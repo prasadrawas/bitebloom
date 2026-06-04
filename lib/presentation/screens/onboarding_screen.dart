@@ -49,7 +49,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.of(context).pushReplacementNamed('/profile-setup');
+      _finish();
+    }
+  }
+
+  void _finish() {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    } else {
+      Navigator.of(context).pushReplacementNamed('/home');
     }
   }
 
@@ -64,8 +72,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Align(
               alignment: Alignment.topRight,
               child: TextButton(
-                onPressed: () =>
-                    Navigator.of(context).pushReplacementNamed('/profile-setup'),
+                onPressed: _finish,
                 child: Text(
                   'Skip',
                   style: TextStyle(color: C.of(context).text54),

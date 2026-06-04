@@ -70,8 +70,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         log.i('[Splash] Profile exists → Home');
         _navigateTo('/home');
       } else {
-        log.i('[Splash] No profile → Onboarding');
-        _navigateTo('/onboarding');
+        log.i('[Splash] No profile → Profile Setup');
+        _navigateTo('/profile-setup');
       }
     }
   }
