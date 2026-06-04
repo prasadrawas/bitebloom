@@ -49,6 +49,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         consumed <= (target * AppConfig.goalMetUpper)) {
       HapticFeedback.mediumImpact();
       _confettiController.play();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Daily calorie goal achieved!'),
+          backgroundColor: AppColors.accentGreen,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
+        ),
+      );
     }
   }
 
