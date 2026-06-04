@@ -201,16 +201,32 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: Container(
-                        width: 40, height: 4,
-                        decoration: BoxDecoration(
-                          color: C.of(context).text30,
-                          borderRadius: BorderRadius.circular(2),
+                    Row(
+                      children: [
+                        const Spacer(),
+                        Container(
+                          width: 40, height: 4,
+                          decoration: BoxDecoration(
+                            color: C.of(context).text30,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
                         ),
-                      ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: C.of(context).text12,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.close,
+                                color: C.of(context).text54, size: 18),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     // Meal Image
                     if (meal.imageUrl != null && meal.imageUrl!.isNotEmpty)
                       ClipRRect(
