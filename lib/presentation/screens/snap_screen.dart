@@ -1611,6 +1611,10 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
         _analyzedItems = [];
         _mealName = '';
         _hasEdits = false;
+        _isManualMode = false;
+        _hasBeenAnalysed = false;
+        _error = null;
+        _notesController.clear();
       });
 
       _maybeShowReminderPrompt();
