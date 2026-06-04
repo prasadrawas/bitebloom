@@ -6,8 +6,10 @@ class NutritionCalculator {
     required double weight,
     required double height,
   }) {
-    final heightM = height / 100;
-    return weight / (heightM * heightM);
+    final w = weight.clamp(20.0, 500.0);
+    final h = height.clamp(50.0, 300.0);
+    final heightM = h / 100;
+    return (w / (heightM * heightM)).clamp(5.0, 100.0);
   }
 
   /// Get BMI category label
@@ -27,11 +29,16 @@ class NutritionCalculator {
     required int age,
     String gender = 'male',
   }) {
+    final w = weight.clamp(20.0, 500.0);
+    final h = height.clamp(50.0, 300.0);
+    final a = age.clamp(1, 120);
+    double bmr;
     if (gender == 'male') {
-      return 10 * weight + 6.25 * height - 5 * age + 5;
+      bmr = 10 * w + 6.25 * h - 5 * a + 5;
     } else {
-      return 10 * weight + 6.25 * height - 5 * age - 161;
+      bmr = 10 * w + 6.25 * h - 5 * a - 161;
     }
+    return bmr.clamp(500.0, 10000.0);
   }
 
   /// Calculate TDEE based on activity level (default: moderately active 1.55)
