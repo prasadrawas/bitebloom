@@ -27,6 +27,13 @@
 - Meals with non-standard meal types no longer silently hidden in diary
 - Pull-to-refresh now awaits actual data instead of fake delay
 - Prevented confetti stacking on rapid meal logging
+- Added timeout to Gemini API calls (10s connect, 30s receive)
+- Fixed memory leak: item editor controllers now disposed on close
+- Prevented duplicate meals from double-tap on Log Meal button
+- Full state reset after meal save (manual mode, notes, error flags)
+- Notes cleared when switching Snap tab mode toggle
+- Gemini fallback now triggers on timeout and connection errors too
+- Item editor requires item name before saving
 
 ### New Features
 - BMI & BMR display card on home screen with color-coded BMI category
