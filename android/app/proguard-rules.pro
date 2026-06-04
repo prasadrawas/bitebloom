@@ -21,6 +21,15 @@
     @com.google.gson.annotations.SerializedName <fields>;
 }
 
+# Mobile Scanner / CameraX
+-keep class androidx.camera.** { *; }
+-keep class com.google.mlkit.** { *; }
+-dontwarn com.google.mlkit.**
+
+# Google Sign-In
+-keep class com.google.android.gms.auth.** { *; }
+-keep class com.google.android.gms.common.** { *; }
+
 # Preserve native methods
 -keepclasseswithmembernames class * {
     native <methods>;
