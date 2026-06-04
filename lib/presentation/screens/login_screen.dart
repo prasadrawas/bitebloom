@@ -101,6 +101,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _showError('Enter your email first, then tap Forgot Password.');
       return;
     }
+    final emailRegex = RegExp(
+        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    if (!emailRegex.hasMatch(email)) {
+      _showError('Enter a valid email address.');
+      return;
+    }
     try {
       await ref.read(authServiceProvider).sendPasswordReset(email);
       if (!mounted) return;
