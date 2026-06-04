@@ -44,6 +44,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
   void _nextPage() {
     if (_currentPage == 0 && !_formKey.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
     if (_currentPage < _totalPages - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 350),
