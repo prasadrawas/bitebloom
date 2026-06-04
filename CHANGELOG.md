@@ -34,6 +34,12 @@
 - Notes cleared when switching Snap tab mode toggle
 - Gemini fallback now triggers on timeout and connection errors too
 - Item editor requires item name before saving
+- Clamped nutrition targets in Edit Goals to realistic ranges
+- Sign out handles failures with error snackbar
+- CSV export escapes tabs and semicolons in data
+- Scan history animation delay capped to prevent jank on large lists
+- Theme toggle handles SharedPreferences write failure gracefully
+- Legal webview shows error state with retry button when offline
 
 ### New Features
 - BMI & BMR display card on home screen with color-coded BMI category
@@ -60,6 +66,9 @@
 - PopScope on login and profile setup screens
 - Forgot password dismisses keyboard
 - Password visibility toggle has accessibility tooltip
+- Profile edit warns before discarding unsaved changes
+- Close button on diary meal details bottom sheet
+- Export service cleans up temp files after sharing
 - Moved onboarding screen to first home visit instead of after registration
 - New users now go directly to profile setup after sign-up for a smoother flow
 - Added tappable Terms of Service and Privacy Policy links on login screen
