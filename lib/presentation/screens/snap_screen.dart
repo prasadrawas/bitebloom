@@ -689,7 +689,9 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
+      builder: (context) {
+        final mealNameCtrl = TextEditingController(text: _mealName);
+        return StatefulBuilder(
         builder: (context, setSheetState) {
           // Sum micronutrients across all items
           double sumField(double Function(AnalyzedItem) fn) =>
@@ -765,7 +767,7 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
 
                           // ── Section 1: Meal Name ──
                           TextField(
-                            controller: TextEditingController(text: _mealName),
+                            controller: mealNameCtrl,
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
@@ -1153,7 +1155,8 @@ class _SnapScreenState extends ConsumerState<SnapScreen> {
             },
           );
         },
-      ),
+      );
+      },
     );
   }
 

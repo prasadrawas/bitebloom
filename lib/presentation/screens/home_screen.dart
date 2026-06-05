@@ -601,6 +601,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     final currentWater = summary?.waterIntake ?? 0;
                     return WaterTracker(
                       currentMl: currentWater,
+                      targetMl: AppConfig.defaultWaterTarget,
                       onAdd: () async {
                         final user = ref.read(currentUserProvider);
                         if (user == null) return;
@@ -610,7 +611,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             .updateWaterIntake(
                               user.uid,
                               today,
-                              currentWater + AppConfig.waterIncrement,
+                              (currentWater + AppConfig.waterIncrement).clamp(0, 10000),
                             );
                       },
                       onRemove: currentWater > 0
