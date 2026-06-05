@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.1 (2026-06-05)
+
+### Bug Fixes
+- Fixed bottom navigation bar overlapping with system navigation buttons using SafeArea
+
+## 1.1.0 (2026-06-05)
+
+### Added
+- Migrated from Gemini REST API to Firebase AI Logic (no API keys in app)
+- Firebase App Check with Play Integrity for production security
+- All Firebase packages upgraded to latest versions (firebase_core 4.x, firebase_auth 6.x, cloud_firestore 6.x, google_sign_in 7.x)
+- Daily scan limit now applies to re-analyse and analyse with AI calls
+
+### Removed
+- Gemini API key from app bundle (handled by Firebase)
+- Cloudinary API key and secret from config (unused for unsigned uploads)
+
 ## 1.0.1 (2026-06-04)
 
 ### Added
