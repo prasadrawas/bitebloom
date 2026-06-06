@@ -1,17 +1,13 @@
 # Changelog
 
-## 1.1.3 (2026-06-06)
-
-### Bug Fixes
-- Fixed notifications arriving at wrong time (timezone was defaulting to UTC instead of device timezone)
-- Changed to exact scheduling for precise notification delivery
-
 ## 1.1.2 (2026-06-06)
 
 ### Bug Fixes
 - Fixed meal name TextField memory leak in snap result sheet
 - Clamped water intake to 10,000ml max
 - Water tracker uses configurable target from AppConfig
+- Fixed notifications arriving at wrong time (timezone defaulting to UTC instead of device timezone)
+- Changed to exact scheduling for precise notification delivery
 
 ## 1.1.1 (2026-06-05)
 
