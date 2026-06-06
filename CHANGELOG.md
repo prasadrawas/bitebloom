@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.3 (2026-06-06)
+
+### Bug Fixes
+- Fixed notifications arriving at wrong time (timezone was defaulting to UTC instead of device timezone)
+- Changed to exact scheduling for precise notification delivery
+
 ## 1.1.2 (2026-06-06)
 
 ### Bug Fixes
