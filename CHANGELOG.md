@@ -4,6 +4,9 @@
 
 ### Bug Fixes
 - Fixed bottom navigation bar overlapping with system navigation buttons using SafeArea
+- Fixed meal name TextField memory leak in snap result sheet (controller created per rebuild)
+- Clamped water intake to 10,000ml max to prevent overflow
+- Water tracker now uses configurable target from AppConfig instead of hardcoded 2500ml
 
 ## 1.1.0 (2026-06-05)
 
